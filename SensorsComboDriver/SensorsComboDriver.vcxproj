@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C3964BD1-B485-4236-8BB4-E2981B800AC1}</ProjectGuid>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <UMDF_VERSION_MAJOR>2</UMDF_VERSION_MAJOR>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">Win32</Platform>
+    <SampleGuid>{5E23E5F0-A79D-451A-A6E3-AA8ECD5B1E10}</SampleGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetVersion>Windows10</TargetVersion>
+    <UseDebugLibraries>False</UseDebugLibraries>
+    <DriverTargetPlatform>Universal</DriverTargetPlatform>
+    <DriverType>UMDF</DriverType>
+    <PlatformToolset>WindowsUserModeDriver10.0</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetVersion>Windows10</TargetVersion>
+    <UseDebugLibraries>True</UseDebugLibraries>
+    <DriverTargetPlatform>Universal</DriverTargetPlatform>
+    <DriverType>UMDF</DriverType>
+    <PlatformToolset>WindowsUserModeDriver10.0</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetVersion>Windows10</TargetVersion>
+    <UseDebugLibraries>False</UseDebugLibraries>
+    <DriverTargetPlatform>Universal</DriverTargetPlatform>
+    <DriverType>UMDF</DriverType>
+    <PlatformToolset>WindowsUserModeDriver10.0</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetVersion>Windows10</TargetVersion>
+    <UseDebugLibraries>True</UseDebugLibraries>
+    <DriverTargetPlatform>Universal</DriverTargetPlatform>
+    <DriverType>UMDF</DriverType>
+    <PlatformToolset>WindowsUserModeDriver10.0</PlatformToolset>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <OutDir>$(IntDir)</OutDir>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ItemGroup Label="WrappedTaskItems">
+    <Inf Include="SensorsComboDriver.inf">
+      <Architecture>$(InfArch)</Architecture>
+      <SpecifyArchitecture>true</SpecifyArchitecture>
+      <CopyOutput>.\$(IntDir)\SensorsComboDriver.inf</CopyOutput>
+    </Inf>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>SensorsComboDriver</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>SensorsComboDriver</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>SensorsComboDriver</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>SensorsComboDriver</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <WppEnabled>true</WppEnabled>
+      <WppRecorderEnabled>true</WppRecorderEnabled>
+      <WppScanConfigurationData>SensorsTrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies);$(SDK_LIB_PATH)\mincore.lib;$(SDK_LIB_PATH)\propsys.lib;$(SDK_LIB_PATH)\sensors\1.1\sensorscxstub.lib;$(SDK_LIB_PATH)\sensorsutils.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM=1</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <WppEnabled>true</WppEnabled>
+      <WppRecorderEnabled>true</WppRecorderEnabled>
+    </ClCompile>
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies);$(SDK_LIB_PATH)\mincore.lib;$(SDK_LIB_PATH)\propsys.lib;$(SDK_LIB_PATH)\sensors\1.1\sensorscxstub.lib;$(SDK_LIB_PATH)\sensorsutils.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies);$(SDK_LIB_PATH)\mincore.lib;$(SDK_LIB_PATH)\propsys.lib;$(SDK_LIB_PATH)\sensors\1.1\sensorscxstub.lib;$(SDK_LIB_PATH)\sensorsutils.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_UNICODE;UNICODE;WPP_MACRO_USE_KM_VERSION_FOR_UM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SDK_INC_PATH);$(DDK_INC_PATH)\sensors\1.1;$(SDK_INC_PATH)\sensors\1.1</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>%(AdditionalDependencies);$(SDK_LIB_PATH)\mincore.lib;$(SDK_LIB_PATH)\propsys.lib;$(SDK_LIB_PATH)\sensors\1.1\sensorscxstub.lib;$(SDK_LIB_PATH)\sensorsutils.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Inf Exclude="@(Inf)" Include="*.inf" />
+    <FilesToPackage Include="$(TargetPath)" Condition="'$(ConfigurationType)'=='Driver' or '$(ConfigurationType)'=='DynamicLibrary'" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Exclude="@(None)" Include="*.txt;*.htm;*.html" />
+    <None Exclude="@(None)" Include="*.ico;*.cur;*.bmp;*.dlg;*.rct;*.gif;*.jpg;*.jpeg;*.wav;*.jpe;*.tiff;*.tif;*.png;*.rc2" />
+    <None Exclude="@(None)" Include="*.def;*.bat;*.hpj;*.asmx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AlsClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="BarClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="Clients.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="device.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="driver.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="GeomagneticOrientationClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="GravityVectorClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="GyrClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="linearaccelerometerclient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="MagClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="PrxClient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+    <ClCompile Include="relativefusionclient.cpp">
+      <WppEnabled>true</WppEnabled>
+      <WppDllMacro>true</WppDllMacro>
+      <WppModuleName>SensorsComboDriver</WppModuleName>
+      <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Clients.h" />
+    <ClInclude Include="Driver.h" />
+    <ClInclude Include="SensorsTrace.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
