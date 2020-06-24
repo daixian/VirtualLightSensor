@@ -39,6 +39,31 @@
 ## 三、开发记录
 * 遇到了无法打开文件的问题，使用C的fopen()创建任何文件，试了多个路径均没成功。有[说法](https://community.osr.com/discussion/198727/accessing-file-system-from-with-a-umdf)说UMDF驱动程序在LocalService帐户下运行。如果此帐户可以访问文件，则可以访问该文件。
     * 后来决定直接使用共享内存算了。
+* 创建国际INF文件没有成功，不知道是什么原因。
+    ``` ini
+    [Strings]
+    ;Localizable Strings
+    MediaDescription           = "Virtual Light Sensor Driver"
+    PROVIDER                   = "daixian"
+    VirtualLightSensorDriver_DevDesc = "VirtualLightSensor"
+    WudfRdDisplayName          = "Windows Driver Foundation - User-mode Driver Framework Reflector"
+    ;Non-Localizable Strings
+    SERVICE_KERNEL_DRIVER    = 1
+    SERVICE_DEMAND_START     = 3
+    SERVICE_ERROR_NORMAL     = 1
+
+    [Strings.0804]
+    ;Localizable Strings
+    MediaDescription           = "Virtual Light Sensor Driver"
+    PROVIDER                   = "daixian"
+    VirtualLightSensorDriver_DevDesc = "VirtualLightSensor"
+    WudfRdDisplayName          = "Windows Driver Foundation - User-mode Driver Framework Reflector"
+    ;Non-Localizable Strings
+    SERVICE_KERNEL_DRIVER    = 1
+    SERVICE_DEMAND_START     = 3
+    SERVICE_ERROR_NORMAL     = 1
+    ```
+    报错error 1295: Section [strings] contains a different number of strings than section [strings.0804].
 
 ### 文档
 * [OSLangCodes](https://www.autoitscript.com/autoit3/docs/appendix/OSLangCodes.htm)
