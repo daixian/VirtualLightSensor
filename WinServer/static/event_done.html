@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>F3DSystem</title>
+    <link rel="icon" href="/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body class="layui-bg-black">
+    <h1>执行完毕!</h1>
+    <br />
+    <br />
+    <span class="layui-text">
+        <a href="/ ">返回主页!</a>
+    </span>
+
+    <script>
+        //全局快捷键
+        window.onkeydown = function(e) {
+            console.log(e.keyCode);
+            switch (e.keyCode) {
+                case 37:
+                    window.location.href = "/ ";;
+                    break;
+            }
+        }
+    </script>
+</body>
+
+</html>

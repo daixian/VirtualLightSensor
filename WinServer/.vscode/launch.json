@@ -1,0 +1,60 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            // "program": "${workspaceFolder}/build/bin/test.out",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/bin/",
+            "environment": [
+                // {
+                //     "name": "PATH",
+                //     "value": "$PATH:$HOME/some_path"
+                // },
+                // {
+                //     "name": "OTHER_VALUE",
+                //     "value": "Something something"
+                // }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // "preLaunchTask": "creat-dev(linux)", //实际每次运行前需要使用cmake工具build
+            // 实际上使用cmake插件自带的debug，不需要这个配置文件，快速调试可以直接ctrl+F5运行或者点下面状态栏的小按钮运行。
+            // 但是，注意快速调试不允许您指定程序参数或其他调试选项 https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
+            "miDebuggerPath": "/usr/bin/gdb",
+            // "miDebuggerServerAddress": "127.0.0.1:10000",
+        }
+    ]
+}

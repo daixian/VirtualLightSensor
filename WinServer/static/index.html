@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>F3DSystem</title>
+    <link rel="icon" href="/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/main.css">
+</head>
+
+<body class="site-demo-button layui-text layui-bg-black">
+
+    <div id="result"></div>
+    <script>
+        //全局快捷键
+        window.onkeydown = function (e) {
+            console.log(e.keyCode);
+            switch (e.keyCode) {
+                case 13:
+                    btnSaveImage.submit();
+                    break;
+            }
+        }
+
+        if (typeof (EventSource) !== "undefined") {
+            var source = new EventSource("/test/sse");
+            source.onmessage = function (event) {
+                document.getElementById("result").innerHTML += event.data + "<br />";
+            };
+        } else {
+            document.getElementById("result").innerHTML = "抱歉，您的浏览器不支持 server-sent 事件 ...";
+        }
+    </script>
+
+</body>
+
+</html>
