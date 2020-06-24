@@ -16,11 +16,11 @@ extern "C" {
 
 // Define the tracing flags.
 //
-// Tracing GUID - 3C773167-F26D-4F72-A1DE-95F1FD795840
+// Tracing GUID - 74D7D45C-A936-43F7-B3E2-359F0BD20C5F
 
 #define WPP_CONTROL_GUIDS                                                               \
     WPP_DEFINE_CONTROL_GUID(                                                            \
-        SimpleDeviceOrientationSensorTraceGuid, (3C773167,F26D,4F72,A1DE,95F1FD795840), \
+        SimpleDeviceOrientationSensorTraceGuid, (74D7D45C,A936,43F7,B3E2,359F0BD20C5F), \
         WPP_DEFINE_BIT(EntryExit)                                                       \
         WPP_DEFINE_BIT(DataFlow)                                                        \
         WPP_DEFINE_BIT(Verbose)                                                         \

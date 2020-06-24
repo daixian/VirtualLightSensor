@@ -22,59 +22,94 @@
 enum Device
 {
     Device_Als = 0,
-    Device_Bar,
-    Device_GeomagneticOrientation,
-    Device_GravityVector,
-    Device_Gyr,
-    Device_LinearAccelerometer,
-    Device_Mag,
-    Device_Prx,
-    Device_RelativeFusion,
+    //Device_Bar,
+    //Device_GeomagneticOrientation,
+    //Device_GravityVector,
+    //Device_Gyr,
+    //Device_LinearAccelerometer,
+    //Device_Mag,
+    //Device_Prx,
+    //Device_RelativeFusion,
     // Keep this last
     Device_Count
 };
 
 static const ULONG SensorInstanceCount = Device_Count;
-static SENSOROBJECT SensorInstancesBuffer[SensorInstanceCount];    // Global buffer to avoid allocate and free
+static SENSOROBJECT SensorInstancesBuffer[SensorInstanceCount]; // Global buffer to avoid allocate and free
 
 inline size_t GetDeviceSizeAtIndex(
     _In_ ULONG Index)
 {
     size_t result = 0;
-    switch (static_cast<Device>(Index))
-    {
-        case Device_Als:                    result = sizeof(AlsDevice); break;
-        case Device_Bar:                    result = sizeof(BarDevice); break;
-        case Device_GeomagneticOrientation: result = sizeof(GeomagneticOrientationDevice); break;
-        case Device_GravityVector:          result = sizeof(GravityVectorDevice); break;
-        case Device_Gyr:                    result = sizeof(GyrDevice); break;
-        case Device_LinearAccelerometer:    result = sizeof(LinearAccelerometerDevice); break;
-        case Device_Mag:                    result = sizeof(MagDevice); break;
-        case Device_Prx:                    result = sizeof(PrxDevice); break;
-        case Device_RelativeFusion:         result = sizeof(RelativeFusionDevice); break;
-        default: break; // invalid
+    switch (static_cast<Device>(Index)) {
+    case Device_Als:
+        result = sizeof(AlsDevice);
+        break;
+    //case Device_Bar:
+    //    result = sizeof(BarDevice);
+    //    break;
+    //case Device_GeomagneticOrientation:
+    //    result = sizeof(GeomagneticOrientationDevice);
+    //    break;
+    //case Device_GravityVector:
+    //    result = sizeof(GravityVectorDevice);
+    //    break;
+    //case Device_Gyr:
+    //    result = sizeof(GyrDevice);
+    //    break;
+    //case Device_LinearAccelerometer:
+    //    result = sizeof(LinearAccelerometerDevice);
+    //    break;
+    //case Device_Mag:
+    //    result = sizeof(MagDevice);
+    //    break;
+    //case Device_Prx:
+    //    result = sizeof(PrxDevice);
+    //    break;
+    //case Device_RelativeFusion:
+    //    result = sizeof(RelativeFusionDevice);
+    //    break;
+    default:
+        break; // invalid
     }
     return result;
 }
 
 void AllocateDeviceAtIndex(
     _In_ ULONG Index,
-    _Inout_ PComboDevice* ppDevice
-    )
+    _Inout_ PComboDevice* ppDevice)
 {
-    switch (static_cast<Device>(Index))
-    {
-        case Device_Als:                    *ppDevice = new(*ppDevice) AlsDevice; break;
-        case Device_Bar:                    *ppDevice = new(*ppDevice) BarDevice; break;
-        case Device_GeomagneticOrientation: *ppDevice = new(*ppDevice) GeomagneticOrientationDevice; break;
-        case Device_GravityVector:          *ppDevice = new(*ppDevice) GravityVectorDevice; break;
-        case Device_Gyr:                    *ppDevice = new(*ppDevice) GyrDevice; break;
-        case Device_LinearAccelerometer:    *ppDevice = new(*ppDevice) LinearAccelerometerDevice; break;
-        case Device_Mag:                    *ppDevice = new(*ppDevice) MagDevice; break;
-        case Device_Prx:                    *ppDevice = new(*ppDevice) PrxDevice; break;
-        case Device_RelativeFusion:         *ppDevice = new(*ppDevice) RelativeFusionDevice; break;
+    switch (static_cast<Device>(Index)) {
+    case Device_Als:
+        *ppDevice = new (*ppDevice) AlsDevice;
+        break;
+        //case Device_Bar:
+        //    *ppDevice = new (*ppDevice) BarDevice;
+        //    break;
+        //case Device_GeomagneticOrientation:
+        //    *ppDevice = new (*ppDevice) GeomagneticOrientationDevice;
+        //    break;
+        //case Device_GravityVector:
+        //    *ppDevice = new (*ppDevice) GravityVectorDevice;
+        //    break;
+        //case Device_Gyr:
+        //    *ppDevice = new (*ppDevice) GyrDevice;
+        //    break;
+        //case Device_LinearAccelerometer:
+        //    *ppDevice = new (*ppDevice) LinearAccelerometerDevice;
+        //    break;
+        //case Device_Mag:
+        //    *ppDevice = new (*ppDevice) MagDevice;
+        //    break;
+        //case Device_Prx:
+        //    *ppDevice = new (*ppDevice) PrxDevice;
+        //    break;
+        //case Device_RelativeFusion:
+        //    *ppDevice = new (*ppDevice) RelativeFusionDevice;
+        //    break;
 
-        default: break; // invalid (let driver fail)
+    default:
+        break; // invalid (let driver fail)
     }
 }
 
@@ -97,8 +132,7 @@ void AllocateDeviceAtIndex(
 NTSTATUS
 OnDeviceAdd(
     _In_ WDFDRIVER /*Driver*/,
-    _Inout_ PWDFDEVICE_INIT pDeviceInit
-    )
+    _Inout_ PWDFDEVICE_INIT pDeviceInit)
 {
     WDF_PNPPOWER_EVENT_CALLBACKS Callbacks;
     WDFDEVICE Device;
@@ -115,8 +149,7 @@ OnDeviceAdd(
     // Initialize FDO attributes and set up file object with sensor extension
     //
     Status = SensorsCxDeviceInitConfig(pDeviceInit, &FdoAttributes, Flag);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         TraceError("COMBO %!FUNC! SensorsCxDeviceInitConfig failed %!STATUS!", Status);
         goto Exit;
     }
@@ -136,8 +169,7 @@ OnDeviceAdd(
     // Call the framework to create the device
     //
     Status = WdfDeviceCreate(&pDeviceInit, &FdoAttributes, &Device);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         TraceError("COMBO %!FUNC! WdfDeviceCreate failed %!STATUS!", Status);
         goto Exit;
     }
@@ -148,30 +180,29 @@ OnDeviceAdd(
     SENSOR_CONTROLLER_CONFIG_INIT(&SensorConfig);
     SensorConfig.DriverIsPowerPolicyOwner = WdfUseDefault;
 
-    SensorConfig.EvtSensorStart                     = OnStart;
-    SensorConfig.EvtSensorStop                      = OnStop;
-    SensorConfig.EvtSensorGetSupportedDataFields    = OnGetSupportedDataFields;
-    SensorConfig.EvtSensorGetDataInterval           = OnGetDataInterval;
-    SensorConfig.EvtSensorSetDataInterval           = OnSetDataInterval;
-    SensorConfig.EvtSensorGetDataFieldProperties    = OnGetDataFieldProperties;
-    SensorConfig.EvtSensorGetDataThresholds         = OnGetDataThresholds;
-    SensorConfig.EvtSensorSetDataThresholds         = OnSetDataThresholds;
-    SensorConfig.EvtSensorGetProperties             = OnGetProperties;
-    SensorConfig.EvtSensorDeviceIoControl           = OnIoControl;
-    SensorConfig.EvtSensorStartHistory              = OnStartHistory;
-    SensorConfig.EvtSensorStopHistory               = OnStopHistory;
-    SensorConfig.EvtSensorClearHistory              = OnClearHistory;
-    SensorConfig.EvtSensorStartHistoryRetrieval     = OnStartHistoryRetrieval;
-    SensorConfig.EvtSensorCancelHistoryRetrieval    = OnCancelHistoryRetrieval;
-    SensorConfig.EvtSensorEnableWake                = OnEnableWake;
-    SensorConfig.EvtSensorDisableWake               = OnDisableWake;
+    SensorConfig.EvtSensorStart = OnStart;
+    SensorConfig.EvtSensorStop = OnStop;
+    SensorConfig.EvtSensorGetSupportedDataFields = OnGetSupportedDataFields;
+    SensorConfig.EvtSensorGetDataInterval = OnGetDataInterval;
+    SensorConfig.EvtSensorSetDataInterval = OnSetDataInterval;
+    SensorConfig.EvtSensorGetDataFieldProperties = OnGetDataFieldProperties;
+    SensorConfig.EvtSensorGetDataThresholds = OnGetDataThresholds;
+    SensorConfig.EvtSensorSetDataThresholds = OnSetDataThresholds;
+    SensorConfig.EvtSensorGetProperties = OnGetProperties;
+    SensorConfig.EvtSensorDeviceIoControl = OnIoControl;
+    SensorConfig.EvtSensorStartHistory = OnStartHistory;
+    SensorConfig.EvtSensorStopHistory = OnStopHistory;
+    SensorConfig.EvtSensorClearHistory = OnClearHistory;
+    SensorConfig.EvtSensorStartHistoryRetrieval = OnStartHistoryRetrieval;
+    SensorConfig.EvtSensorCancelHistoryRetrieval = OnCancelHistoryRetrieval;
+    SensorConfig.EvtSensorEnableWake = OnEnableWake;
+    SensorConfig.EvtSensorDisableWake = OnDisableWake;
 
     //
     // Set up power capabilities and IO queues
     //
     Status = SensorsCxDeviceInitialize(Device, &SensorConfig);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         TraceError("COMBO %!FUNC! SensorDeviceInitialize failed %!STATUS!", Status);
         goto Exit;
     }
@@ -180,7 +211,6 @@ Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
 
 //------------------------------------------------------------------------------
 //
@@ -210,14 +240,13 @@ OnPrepareHardware(
     _In_ WDFDEVICE Device,
     _In_ WDFCMRESLIST /*ResourcesRaw*/,
     _In_ WDFCMRESLIST /*ResourcesTranslated*/
-    )
+)
 {
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    for (ULONG Count = 0; Count < SensorInstanceCount; Count++)
-    {
+    for (ULONG Count = 0; Count < SensorInstanceCount; Count++) {
         PComboDevice pDevice = nullptr;
         WDF_OBJECT_ATTRIBUTES SensorAttr;
         SENSOR_CONFIG SensorConfig;
@@ -229,15 +258,13 @@ OnPrepareHardware(
 
         // Register sensor instance with clx
         Status = SensorsCxSensorCreate(Device, &SensorAttr, &SensorInstance);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! SensorsCxSensorCreate failed %!STATUS!", Status);
             goto Exit;
         }
 
         pDevice = GetContextFromSensorInstance(SensorInstance);
-        if (nullptr == pDevice)
-        {
+        if (nullptr == pDevice) {
             Status = STATUS_INSUFFICIENT_RESOURCES;
             TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
             goto Exit;
@@ -247,8 +274,7 @@ OnPrepareHardware(
 
         // Fill out properties
         Status = pDevice->Initialize(Device, SensorInstance);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! Initialize device object failed %!STATUS!", Status);
             goto Exit;
         }
@@ -256,8 +282,7 @@ OnPrepareHardware(
         SENSOR_CONFIG_INIT(&SensorConfig);
         SensorConfig.pEnumerationList = pDevice->m_pEnumerationProperties;
         Status = SensorsCxSensorInitialize(SensorInstance, &SensorConfig);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! SensorsCxSensorInitialize failed %!STATUS!", Status);
             goto Exit;
         }
@@ -267,8 +292,6 @@ Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -296,7 +319,7 @@ NTSTATUS
 OnReleaseHardware(
     _In_ WDFDEVICE Device,
     _In_ WDFCMRESLIST /*ResourcesTranslated*/
-    )
+)
 {
     ULONG Count = SensorInstanceCount;
     PComboDevice pDevice = nullptr;
@@ -305,33 +328,28 @@ OnReleaseHardware(
     SENSOR_FunctionEnter();
 
     Status = SensorsCxDeviceGetSensorList(Device, SensorInstancesBuffer, &Count);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! SensorsCxDeviceGetSensorList failed %!STATUS!", Status);
         goto Exit;
     }
 
-    for (Count = 0; Count < SensorInstanceCount; Count++)
-    {
+    for (Count = 0; Count < SensorInstanceCount; Count++) {
         pDevice = GetContextFromSensorInstance(SensorInstancesBuffer[Count]);
-        if (nullptr == pDevice)
-        {
+        if (nullptr == pDevice) {
             Status = STATUS_INVALID_PARAMETER;
             TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
             goto Exit;
         }
 
         // Delete lock
-        if (NULL != pDevice->m_Lock)
-        {
+        if (NULL != pDevice->m_Lock) {
             WdfObjectDelete(pDevice->m_Lock);
             pDevice->m_Lock = NULL;
         }
 
         // Delete sensor instance
-        if (NULL != pDevice->m_SensorInstance)
-        {
+        if (NULL != pDevice->m_SensorInstance) {
             WdfObjectDelete(pDevice->m_SensorInstance);
             // The pDevice context created using WdfMemoryCreate and parented to m_SensorInstance is automatically
             // destroyed when m_SensorInstance is deleted. pDevice is therefore no longer accessible beyond the above call to WdfObjectDelete.
@@ -344,8 +362,6 @@ Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -369,7 +385,7 @@ NTSTATUS
 OnD0Entry(
     _In_ WDFDEVICE Device,
     _In_ WDF_POWER_DEVICE_STATE /*PreviousState*/
-    )
+)
 {
     ULONG Count = SensorInstanceCount;
     PComboDevice pDevice = nullptr;
@@ -381,8 +397,7 @@ OnD0Entry(
     // Get sensor instances
     //
     Status = SensorsCxDeviceGetSensorList(Device, SensorInstancesBuffer, &Count);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! SensorsCxDeviceGetSensorList failed %!STATUS!", Status);
         goto Exit;
@@ -391,11 +406,9 @@ OnD0Entry(
     //
     // Powering on all sensor instances
     //
-    for (Count = 0; Count < SensorInstanceCount; Count++)
-    {
+    for (Count = 0; Count < SensorInstanceCount; Count++) {
         pDevice = GetContextFromSensorInstance(SensorInstancesBuffer[Count]);
-        if (nullptr == pDevice)
-        {
+        if (nullptr == pDevice) {
             Status = STATUS_INVALID_PARAMETER;
             TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
             goto Exit;
@@ -410,8 +423,6 @@ Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -434,7 +445,7 @@ NTSTATUS
 OnD0Exit(
     _In_ WDFDEVICE Device,
     _In_ WDF_POWER_DEVICE_STATE /*TargetState*/
-    )
+)
 {
     ULONG Count = SensorInstanceCount;
     PComboDevice pDevice = nullptr;
@@ -446,8 +457,7 @@ OnD0Exit(
     // Get sensor instances
     //
     Status = SensorsCxDeviceGetSensorList(Device, SensorInstancesBuffer, &Count);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! SensorsCxDeviceGetSensorList failed %!STATUS!", Status);
         goto Exit;
@@ -456,11 +466,9 @@ OnD0Exit(
     //
     // Powering off all sensor instances
     //
-    for (Count = 0; Count < SensorInstanceCount; Count++)
-    {
+    for (Count = 0; Count < SensorInstanceCount; Count++) {
         pDevice = GetContextFromSensorInstance(SensorInstancesBuffer[Count]);
-        if (nullptr == pDevice)
-        {
+        if (nullptr == pDevice) {
             Status = STATUS_INVALID_PARAMETER;
             TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
             goto Exit;

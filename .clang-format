@@ -1,0 +1,71 @@
+﻿#官方说明文档:
+# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+Language: Cpp
+
+#If true, analyze the formatted file for the most common alignment of & and *. PointerAlignment is then used only as fallback.
+DerivePointerAlignment: true
+
+TabWidth: 4
+IndentWidth: 4
+UseTab: Never
+
+#If true, spaces are inserted inside container literals (e.g. ObjC and Javascript array and dict literals). 容器文字插空格
+SpacesInContainerLiterals: false
+
+#Add a space after @property in Objective-C, i.e. use \@property (readonly) instead of \@property(readonly).
+ObjCSpaceAfterProperty: false
+
+#The number of characters to use for indentation of ObjC blocks.
+ObjCBlockIndentWidth: 4
+
+#If true, if (a) return; can be put on a single line.
+AllowShortIfStatementsOnASingleLine: true
+
+#If false, spaces will be removed before assignment operators.
+SpaceBeforeAssignmentOperators: true
+
+#Pointer and reference alignment style.
+PointerAlignment: Left
+
+#The maximum number of consecutive empty lines to keep.
+MaxEmptyLinesToKeep: 1
+
+#A column limit of 0 means that there is no column limit.
+ColumnLimit: 0
+
+#注释对齐
+AlignTrailingComments: true
+
+#预处理缩进 BeforeHash更好看,需要clang9,目前只出到clang8
+IndentPPDirectives: AfterHash
+
+#If true, a space is inserted after C style casts.
+SpaceAfterCStyleCast: false
+
+#If true, clang-format will sort #includes.
+SortIncludes: false
+
+BreakBeforeBraces: Custom
+# Control of individual brace wrapping cases
+BraceWrapping: {
+    AfterClass: 'true'
+    AfterControlStatement: 'false'
+    AfterEnum : 'true'
+    AfterFunction : 'true'
+    AfterNamespace : 'false'
+    AfterStruct : 'true'
+    AfterUnion : 'true'
+    BeforeCatch : 'true'
+    BeforeElse : 'true'
+    IndentBraces : 'false'
+    AfterExternBlock : 'true'
+    SplitEmptyFunction : 'false'
+    SplitEmptyRecord : 'false'
+    SplitEmptyNamespace : 'true'
+}
+
+---
+Language: JavaScript
+# Use 100 columns for JS.
+ColumnLimit: 0

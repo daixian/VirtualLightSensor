@@ -1,0 +1,85 @@
+﻿/*++
+;
+;Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;Module Name:
+;    VirtualLightSensorDriver.INF
+;
+;Abstract:
+;    INF file for installing the Virtual Light Sensor Driver
+;
+;Installation Notes:
+;    Using Devcon: Type "devcon install VirtualLightSensorDriver.inf umdf2\VirtualLightSensorDriver" to install
+;
+;--*/
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = Sensor
+ClassGuid   = {5175D334-C371-4806-B3BA-71FD53C9258D}
+Provider    = %PROVIDER%
+CatalogFile = VirtualLightSensorDriver.cat
+DriverVer   = 6/20/2020,1.00.00.00
+
+[SourceDisksNames]
+1 = %MediaDescription%,,,""
+
+[SourceDisksFiles]
+VirtualLightSensorDriver.dll = 1,,
+
+[Manufacturer]
+%PROVIDER% = VirtualLightSensorDriver_Device, NT$ARCH$
+
+;*******************************
+; Combo Driver Install Section
+;*******************************
+
+[VirtualLightSensorDriver_Device.NT$ARCH$]
+; DisplayName       Section          DeviceId
+; -----------       -------          --------
+%VirtualLightSensorDriver_DevDesc% = VirtualLightSensorDriver_Inst, umdf2\VirtualLightSensorDriver
+
+[VirtualLightSensorDriver_Inst.NT]
+CopyFiles = VirtualLightSensorDriverCopy
+
+[VirtualLightSensorDriverCopy]
+VirtualLightSensorDriver.dll
+
+[DestinationDirs]
+;12 == Windows\System32\Drivers\UMDF
+DefaultDestDir = 12,UMDF
+
+;-------------- Service installation
+[VirtualLightSensorDriver_Inst.NT.Services]
+AddService = WUDFRd,0x000001fa,WUDFRD_ServiceInstall
+
+[WUDFRD_ServiceInstall]
+DisplayName   = %WudfRdDisplayName%
+ServiceType   = %SERVICE_KERNEL_DRIVER%
+StartType     = %SERVICE_DEMAND_START%
+ErrorControl  = %SERVICE_ERROR_NORMAL%
+ServiceBinary = %12%\WUDFRd.sys
+
+;-------------- WDF specific section
+
+[VirtualLightSensorDriver_Inst.NT.Wdf]
+UmdfService              = VirtualLightSensorDriver, VirtualLightSensorDriver_Install
+UmdfServiceOrder         = VirtualLightSensorDriver
+UmdfDirectHardwareAccess = AllowDirectHardwareAccess
+UmdfFileObjectPolicy     = AllowNullAndUnknownFileObjects
+UmdfFsContextUsePolicy   = CannotUseFsContexts
+
+[VirtualLightSensorDriver_Install]
+UmdfLibraryVersion       = $UMDFVERSION$
+ServiceBinary            = %12%\UMDF\VirtualLightSensorDriver.dll
+UmdfExtensions           = SensorsCx0102
+
+[Strings]
+;Localizable Strings
+MediaDescription           = "Virtual Light Sensor Driver"
+PROVIDER                   = "daixian"
+VirtualLightSensorDriver_DevDesc = "VirtualLightSensor"
+WudfRdDisplayName          = "Windows Driver Foundation - User-mode Driver Framework Reflector"
+;Non-Localizable Strings
+SERVICE_KERNEL_DRIVER    = 1
+SERVICE_DEMAND_START     = 3
+SERVICE_ERROR_NORMAL     = 1

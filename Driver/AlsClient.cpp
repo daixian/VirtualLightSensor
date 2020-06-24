@@ -1,4 +1,4 @@
-// Copyright (C) Microsoft Corporation, All Rights Reserved.
+﻿// Copyright (C) Microsoft Corporation, All Rights Reserved.
 //
 // Abstract:
 //
@@ -12,25 +12,28 @@
 
 #include "AlsClient.tmh"
 
-#define SENSORV2_POOL_TAG_AMBIENT_LIGHT           '2LmA'
+#include <stdio.h>
+#include "MappingFile.h"
 
-#define Als_Initial_MinDataInterval_Ms            (10)          // 100Hz
-#define Als_Initial_Lux_Threshold_Pct             (1.0f)        // Percent threshold: 100%
-#define Als_Initial_Lux_Threshold_Abs             (0.0f)        // Absolute threshold: 0 lux
-#define Als_Initial_Kelvin_Threshold_Abs          (100.0f)      // Absolute threshold: 100 Kelvins
-#define Als_Initial_Chromaticity_X_Threshold_Abs  (0.01f)       // Absolute threshold: 0.01 of a CIE 1931 chromaticity x coordinate
-#define Als_Initial_Chromaticity_Y_Threshold_Abs  (0.01f)       // Absolute threshold: 0.01 of a CIE 1931 chromaticity y coordinate
+#define SENSORV2_POOL_TAG_AMBIENT_LIGHT '2LmA'
 
-#define AlsDevice_Minimum_Lux                     (-4.0f)
-#define AlsDevice_Maximum_Lux                     (4.0f)
-#define AlsDevice_Precision                       (65536.0f)    // 65536 = 2^16, 16 bit data
-#define AlsDevice_Range_Lux                       (AlsDevice_Maximum_Lux - AlsDevice_Minimum_Lux)
-#define AlsDevice_Resolution_Lux                  (AlsDevice_Range_Lux / AlsDevice_Precision)
+#define Als_Initial_MinDataInterval_Ms (10)              // 100Hz
+#define Als_Initial_Lux_Threshold_Pct (1.0f)             // Percent threshold: 100%
+#define Als_Initial_Lux_Threshold_Abs (0.0f)             // Absolute threshold: 0 lux
+#define Als_Initial_Kelvin_Threshold_Abs (100.0f)        // Absolute threshold: 100 Kelvins
+#define Als_Initial_Chromaticity_X_Threshold_Abs (0.01f) // Absolute threshold: 0.01 of a CIE 1931 chromaticity x coordinate
+#define Als_Initial_Chromaticity_Y_Threshold_Abs (0.01f) // Absolute threshold: 0.01 of a CIE 1931 chromaticity y coordinate
+
+#define AlsDevice_Minimum_Lux (-4.0f)
+#define AlsDevice_Maximum_Lux (4.0f)
+#define AlsDevice_Precision (65536.0f) // 65536 = 2^16, 16 bit data
+#define AlsDevice_Range_Lux (AlsDevice_Maximum_Lux - AlsDevice_Minimum_Lux)
+#define AlsDevice_Resolution_Lux (AlsDevice_Range_Lux / AlsDevice_Precision)
 
 // Ambient Light Sensor Unique ID
 // {2D2A4524-51E3-4E68-9B0F-5CAEDFB12C02}
 DEFINE_GUID(GUID_AlsDevice_UniqueID,
-    0x2d2a4524, 0x51e3, 0x4e68, 0x9b, 0xf, 0x5c, 0xae, 0xdf, 0xb1, 0x2c, 0x2);
+            0x2d2a4524, 0x51e3, 0x4e68, 0x9b, 0xf, 0x5c, 0xae, 0xdf, 0xb1, 0x2c, 0x2);
 
 // Sensor data
 typedef enum
@@ -90,8 +93,7 @@ typedef enum
 NTSTATUS
 AlsDevice::Initialize(
     _In_ WDFDEVICE Device,
-    _In_ SENSOROBJECT SensorInstance
-    )
+    _In_ SENSOROBJECT SensorInstance)
 {
     NTSTATUS Status = STATUS_SUCCESS;
 
@@ -108,8 +110,7 @@ AlsDevice::Initialize(
     // Create Lock
     //
     Status = WdfWaitLockCreate(WDF_NO_OBJECT_ATTRIBUTES, &m_Lock);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         TraceError("COMBO %!FUNC! ALS WdfWaitLockCreate failed %!STATUS!", Status);
         goto Exit;
     }
@@ -127,8 +128,7 @@ AlsDevice::Initialize(
         TimerAttributes.ExecutionLevel = WdfExecutionLevelPassive;
 
         Status = WdfTimerCreate(&TimerConfig, &TimerAttributes, &m_Timer);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! ALS WdfTimerCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -151,8 +151,7 @@ AlsDevice::Initialize(
                                  Size,
                                  &MemoryHandle,
                                  (PVOID*)&m_pEnumerationProperties);
-        if (!NT_SUCCESS(Status) || m_pEnumerationProperties == nullptr)
-        {
+        if (!NT_SUCCESS(Status) || m_pEnumerationProperties == nullptr) {
             TraceError("COMBO %!FUNC! ALS WdfMemoryCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -175,7 +174,7 @@ AlsDevice::Initialize(
         m_pEnumerationProperties->List[SENSOR_CONNECTION_TYPE].Key = DEVPKEY_Sensor_ConnectionType;
         // The DEVPKEY_Sensor_ConnectionType values match the SensorConnectionType enumeration
         InitPropVariantFromUInt32(static_cast<ULONG>(SensorConnectionType::Integrated),
-                                 &(m_pEnumerationProperties->List[SENSOR_CONNECTION_TYPE].Value));
+                                  &(m_pEnumerationProperties->List[SENSOR_CONNECTION_TYPE].Value));
 
         m_pEnumerationProperties->List[SENSOR_PERSISTENT_UNIQUEID].Key = DEVPKEY_Sensor_PersistentUniqueId;
         InitPropVariantFromCLSID(GUID_AlsDevice_UniqueID,
@@ -183,15 +182,15 @@ AlsDevice::Initialize(
 
         m_pEnumerationProperties->List[SENSOR_ISPRIMARY].Key = DEVPKEY_Sensor_IsPrimary;
         InitPropVariantFromBoolean(TRUE,
-                                 &(m_pEnumerationProperties->List[SENSOR_ISPRIMARY].Value));
+                                   &(m_pEnumerationProperties->List[SENSOR_ISPRIMARY].Value));
 
         m_pEnumerationProperties->List[SENSOR_ALS_AUTOBRIGHTNESS_PREFERRED].Key = DEVPKEY_LightSensor_AutoBrightnessPreferred;
         InitPropVariantFromBoolean(TRUE,
-            &(m_pEnumerationProperties->List[SENSOR_ALS_AUTOBRIGHTNESS_PREFERRED].Value));
+                                   &(m_pEnumerationProperties->List[SENSOR_ALS_AUTOBRIGHTNESS_PREFERRED].Value));
 
         m_pEnumerationProperties->List[SENSOR_ALS_COLOR_CAPABLE].Key = DEVPKEY_LightSensor_ColorCapable;
         InitPropVariantFromBoolean(TRUE,
-            &(m_pEnumerationProperties->List[SENSOR_ALS_COLOR_CAPABLE].Value));
+                                   &(m_pEnumerationProperties->List[SENSOR_ALS_COLOR_CAPABLE].Value));
     }
 
     //
@@ -211,8 +210,7 @@ AlsDevice::Initialize(
                                  Size,
                                  &MemoryHandle,
                                  (PVOID*)&m_pSupportedDataFields);
-        if (!NT_SUCCESS(Status) || m_pSupportedDataFields == nullptr)
-        {
+        if (!NT_SUCCESS(Status) || m_pSupportedDataFields == nullptr) {
             TraceError("COMBO %!FUNC! ALS WdfMemoryCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -246,8 +244,7 @@ AlsDevice::Initialize(
                                  Size,
                                  &MemoryHandle,
                                  (PVOID*)&m_pData);
-        if (!NT_SUCCESS(Status) || m_pData == nullptr)
-        {
+        if (!NT_SUCCESS(Status) || m_pData == nullptr) {
             TraceError("COMBO %!FUNC! ALS WdfMemoryCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -286,8 +283,8 @@ AlsDevice::Initialize(
             0.0f, // Lux
             0.0f, // Kelvins
             0.0f, // Chromaticity X
-            0.0f,  // Chromaticity Y
-            TRUE   // IsValid
+            0.0f, // Chromaticity Y
+            TRUE  // IsValid
         };
     }
 
@@ -308,8 +305,7 @@ AlsDevice::Initialize(
                                  Size,
                                  &MemoryHandle,
                                  (PVOID*)&m_pProperties);
-        if (!NT_SUCCESS(Status) || m_pProperties == nullptr)
-        {
+        if (!NT_SUCCESS(Status) || m_pProperties == nullptr) {
             TraceError("COMBO %!FUNC! ALS WdfMemoryCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -343,20 +339,25 @@ AlsDevice::Initialize(
         // The second byte contains the corresponding ambient light value (in LUX).
         // ****************************************************************************************
         // (0, 10)
-        responseCurve[0] = 0; responseCurve[1] = 10;
+        responseCurve[0] = 0;
+        responseCurve[1] = 10;
         // (10, 40)
-        responseCurve[2] = 10; responseCurve[3] = 40;
+        responseCurve[2] = 10;
+        responseCurve[3] = 40;
         // (40, 100)
-        responseCurve[4] = 40; responseCurve[5] = 100;
+        responseCurve[4] = 40;
+        responseCurve[5] = 100;
         // (68, 400)
-        responseCurve[6] = 68; responseCurve[7] = 400;
+        responseCurve[6] = 68;
+        responseCurve[7] = 400;
         // (90, 1000)
-        responseCurve[8] = 90; responseCurve[9] = 1000;
+        responseCurve[8] = 90;
+        responseCurve[9] = 1000;
 
         m_pProperties->List[SENSOR_PROPERTY_ALS_RESPONSE_CURVE].Key = PKEY_LightSensor_ResponseCurve;
         InitPropVariantFromUInt32Vector(responseCurve,
-            10,
-            &(m_pProperties->List[SENSOR_PROPERTY_ALS_RESPONSE_CURVE].Value));
+                                        10,
+                                        &(m_pProperties->List[SENSOR_PROPERTY_ALS_RESPONSE_CURVE].Value));
     }
 
     //
@@ -376,8 +377,7 @@ AlsDevice::Initialize(
                                  Size,
                                  &MemoryHandle,
                                  (PVOID*)&m_pDataFieldProperties);
-        if (!NT_SUCCESS(Status) || m_pDataFieldProperties == nullptr)
-        {
+        if (!NT_SUCCESS(Status) || m_pDataFieldProperties == nullptr) {
             TraceError("COMBO %!FUNC! ALS WdfMemoryCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -415,8 +415,7 @@ AlsDevice::Initialize(
                                  Size,
                                  &MemoryHandle,
                                  (PVOID*)&m_pThresholds);
-        if (!NT_SUCCESS(Status) || m_pThresholds == nullptr)
-        {
+        if (!NT_SUCCESS(Status) || m_pThresholds == nullptr) {
             TraceError("COMBO %!FUNC! ALS WdfMemoryCreate failed %!STATUS!", Status);
             goto Exit;
         }
@@ -427,41 +426,50 @@ AlsDevice::Initialize(
         // Set lux threshold
         m_pThresholds->List[ALS_THRESHOLD_LUX_PCT].Key = PKEY_SensorData_LightLevel_Lux;
         InitPropVariantFromFloat(Als_Initial_Lux_Threshold_Pct,
-                                    &(m_pThresholds->List[ALS_THRESHOLD_LUX_PCT].Value));
+                                 &(m_pThresholds->List[ALS_THRESHOLD_LUX_PCT].Value));
         m_CachedThresholds.LuxPct = Als_Initial_Lux_Threshold_Pct;
 
         m_pThresholds->List[ALS_THRESHOLD_LUX_ABS].Key = PKEY_SensorData_LightLevel_Lux_Threshold_AbsoluteDifference;
         InitPropVariantFromFloat(Als_Initial_Lux_Threshold_Abs,
-                                    &(m_pThresholds->List[ALS_THRESHOLD_LUX_ABS].Value));
+                                 &(m_pThresholds->List[ALS_THRESHOLD_LUX_ABS].Value));
         m_CachedThresholds.LuxAbs = Als_Initial_Lux_Threshold_Abs;
 
         // Set kelvins threshold
         m_pThresholds->List[ALS_THRESHOLD_KELVINS_ABS].Key = PKEY_SensorData_LightTemperature_Kelvins;
         InitPropVariantFromFloat(Als_Initial_Kelvin_Threshold_Abs,
-                                    &(m_pThresholds->List[ALS_THRESHOLD_KELVINS_ABS].Value));
+                                 &(m_pThresholds->List[ALS_THRESHOLD_KELVINS_ABS].Value));
         m_CachedThresholds.KelvinsAbs = Als_Initial_Kelvin_Threshold_Abs;
 
         // Set chromaticity x threshold
         m_pThresholds->List[ALS_THRESHOLD_CHROMATICITY_X_ABS].Key = PKEY_SensorData_LightChromaticityX;
         InitPropVariantFromFloat(Als_Initial_Chromaticity_X_Threshold_Abs,
-                                    &(m_pThresholds->List[ALS_THRESHOLD_CHROMATICITY_X_ABS].Value));
+                                 &(m_pThresholds->List[ALS_THRESHOLD_CHROMATICITY_X_ABS].Value));
         m_CachedThresholds.ChromaticityXAbs = Als_Initial_Chromaticity_X_Threshold_Abs;
 
         // Set chromaticity y threshold
         m_pThresholds->List[ALS_THRESHOLD_CHROMATICITY_Y_ABS].Key = PKEY_SensorData_LightChromaticityY;
         InitPropVariantFromFloat(Als_Initial_Chromaticity_Y_Threshold_Abs,
-                                    &(m_pThresholds->List[ALS_THRESHOLD_CHROMATICITY_Y_ABS].Value));
+                                 &(m_pThresholds->List[ALS_THRESHOLD_CHROMATICITY_Y_ABS].Value));
         m_CachedThresholds.ChromaticityYAbs = Als_Initial_Chromaticity_Y_Threshold_Abs;
 
         m_FirstSample = TRUE;
+    }
+
+    //
+    // 打开共享内存
+    //
+    {
+        Status = dxlib::MappingFile::GetInst()->init();
+        if (Status != 0) {
+            TraceError("COMBO %!FUNC! ALS SharedMemoryOpen failed %!STATUS!", Status);
+            goto Exit;
+        }
     }
 
 Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: GetData
@@ -477,8 +485,7 @@ Exit:
 //      NTSTATUS code
 //------------------------------------------------------------------------------
 NTSTATUS
-AlsDevice::GetData(
-    )
+AlsDevice::GetData()
 {
     BOOLEAN DataReady = FALSE;
     FILETIME TimeStamp = {0};
@@ -486,12 +493,13 @@ AlsDevice::GetData(
 
     SENSOR_FunctionEnter();
 
+    m_CachedData.Lux += 1.0f;
+    dxlib::MappingFile::GetInst()->writeLux(m_CachedData.Lux);
+
     // new sample?
-    if (m_FirstSample != FALSE)
-    {
+    if (m_FirstSample != FALSE) {
         Status = GetPerformanceTime(&m_StartTime);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             m_StartTime = 0;
             TraceError("COMBO %!FUNC! ALS GetPerformanceTime %!STATUS!", Status);
         }
@@ -500,37 +508,30 @@ AlsDevice::GetData(
 
         DataReady = TRUE;
     }
-    else
-    {
+    else {
         // Compare the change of data to threshold, and only push the data back to
         // clx if the change exceeds threshold. This is usually done in HW.
         if (
             (
                 // Lux thresholds needs to exceed absolute and percentage
                 ((abs(m_CachedData.Lux - m_LastSample.Lux) >= (m_LastSample.Lux * m_CachedThresholds.LuxPct)) &&
-                (abs(m_CachedData.Lux - m_LastSample.Lux) >= m_CachedThresholds.LuxAbs)) ||
+                 (abs(m_CachedData.Lux - m_LastSample.Lux) >= m_CachedThresholds.LuxAbs)) ||
                 // If IsValid has changed, the sample is valid
                 (m_CachedData.IsValid != m_LastSample.IsValid) ||
                 // Kelvin temperature and Chromaticity thresholds
                 (abs(m_CachedData.Kelvins - m_LastSample.Kelvins) >= m_CachedThresholds.KelvinsAbs) ||
                 (abs(m_CachedData.ChromaticityX - m_LastSample.ChromaticityX) >= m_CachedThresholds.ChromaticityXAbs) ||
-                (abs(m_CachedData.ChromaticityY - m_LastSample.ChromaticityY) >= m_CachedThresholds.ChromaticityYAbs)
-            )
-            &&
+                (abs(m_CachedData.ChromaticityY - m_LastSample.ChromaticityY) >= m_CachedThresholds.ChromaticityYAbs)) &&
             (
                 // In thresholded mode, don't send sample if the last sample sent was not IsValid and current sample is also not IsValid
                 !((m_CachedThresholds.LuxAbs != 0.0f) && (m_CachedThresholds.LuxPct != 0.0f) &&
                   (m_CachedThresholds.KelvinsAbs != 0.0f) && (m_CachedThresholds.ChromaticityXAbs != 0.0f) &&
-                  (m_CachedThresholds.ChromaticityYAbs != 0.0f) && !m_CachedData.IsValid && !m_LastSample.IsValid)
-            )
-           )
-        {
+                  (m_CachedThresholds.ChromaticityYAbs != 0.0f) && !m_CachedData.IsValid && !m_LastSample.IsValid))) {
             DataReady = TRUE;
         }
     }
 
-    if (DataReady != FALSE)
-    {
+    if (DataReady != FALSE) {
         // update last sample
         m_LastSample = m_CachedData;
 
@@ -551,8 +552,7 @@ AlsDevice::GetData(
         SensorsCxSensorDataReady(m_SensorInstance, m_pData);
         m_FirstSample = FALSE;
     }
-    else
-    {
+    else {
         Status = STATUS_DATA_NOT_ACCEPTED;
         TraceInformation("COMBO %!FUNC! ALS Data did NOT meet the threshold");
     }
@@ -560,8 +560,6 @@ AlsDevice::GetData(
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: UpdateCachedThreshold
@@ -575,8 +573,7 @@ AlsDevice::GetData(
 //      NTSTATUS code
 //------------------------------------------------------------------------------
 NTSTATUS
-AlsDevice::UpdateCachedThreshold(
-    )
+AlsDevice::UpdateCachedThreshold()
 {
     NTSTATUS Status = STATUS_SUCCESS;
 
@@ -585,51 +582,42 @@ AlsDevice::UpdateCachedThreshold(
     Status = PropKeyFindKeyGetFloat(m_pThresholds,
                                     &PKEY_SensorData_LightLevel_Lux,
                                     &m_CachedThresholds.LuxPct);
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         TraceError("COMBO %!FUNC! Failed to get lux pct data from cached threshold %!STATUS!", Status);
     }
 
-    if (NT_SUCCESS(Status))
-    {
+    if (NT_SUCCESS(Status)) {
         Status = PropKeyFindKeyGetFloat(m_pThresholds,
                                         &PKEY_SensorData_LightLevel_Lux_Threshold_AbsoluteDifference,
                                         &m_CachedThresholds.LuxAbs);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! Failed to get lux abs data from cached threshold %!STATUS!", Status);
         }
     }
 
-    if (NT_SUCCESS(Status))
-    {
+    if (NT_SUCCESS(Status)) {
         Status = PropKeyFindKeyGetFloat(m_pThresholds,
                                         &PKEY_SensorData_LightTemperature_Kelvins,
                                         &m_CachedThresholds.KelvinsAbs);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! Failed to get kelvin data from cached threshold %!STATUS!", Status);
         }
     }
 
-    if (NT_SUCCESS(Status))
-    {
+    if (NT_SUCCESS(Status)) {
         Status = PropKeyFindKeyGetFloat(m_pThresholds,
                                         &PKEY_SensorData_LightChromaticityX,
                                         &m_CachedThresholds.ChromaticityXAbs);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! Failed to get chromaticity x data from cached threshold %!STATUS!", Status);
         }
     }
 
-    if (NT_SUCCESS(Status))
-    {
+    if (NT_SUCCESS(Status)) {
         Status = PropKeyFindKeyGetFloat(m_pThresholds,
                                         &PKEY_SensorData_LightChromaticityY,
                                         &m_CachedThresholds.ChromaticityYAbs);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! Failed to get chromaticity y data from cached threshold %!STATUS!", Status);
         }
     }

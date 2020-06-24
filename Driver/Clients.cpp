@@ -27,10 +27,8 @@ static const UINT SYSTEM_TICK_COUNT_1MS = 1; // 1ms
 // Return Value:
 //      None
 //------------------------------------------------------------------------------
-VOID
-OnTimerExpire(
-    _In_ WDFTIMER Timer
-    )
+VOID OnTimerExpire(
+    _In_ WDFTIMER Timer)
 {
     PComboDevice pDevice = nullptr;
     NTSTATUS Status = STATUS_SUCCESS;
@@ -38,8 +36,7 @@ OnTimerExpire(
     SENSOR_FunctionEnter();
 
     pDevice = GetContextFromSensorInstance(WdfTimerGetParentObject(Timer));
-    if (pDevice == nullptr)
-    {
+    if (pDevice == nullptr) {
         Status = STATUS_INSUFFICIENT_RESOURCES;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
         goto Exit;
@@ -48,8 +45,7 @@ OnTimerExpire(
     // Get data and push to clx
     Lock(pDevice->m_Lock);
     Status = pDevice->GetData();
-    if (!NT_SUCCESS(Status) && Status != STATUS_DATA_NOT_ACCEPTED)
-    {
+    if (!NT_SUCCESS(Status) && Status != STATUS_DATA_NOT_ACCEPTED) {
         TraceError("COMBO %!FUNC! GetData Failed %!STATUS!", Status);
     }
     Unlock(pDevice->m_Lock);
@@ -57,39 +53,33 @@ OnTimerExpire(
     // Schedule next wake up time
     if (pDevice->m_MinimumIntervalMs <= pDevice->m_IntervalMs &&
         FALSE != pDevice->m_PoweredOn &&
-        FALSE != pDevice->m_Started)
-    {
-        LONGLONG WaitTime = 0;  // in unit of 100ns
+        FALSE != pDevice->m_Started) {
+        LONGLONG WaitTime = 0; // in unit of 100ns
 
-        if (pDevice->m_StartTime == 0)
-        {
+        if (pDevice->m_StartTime == 0) {
             // in case we fail to get sensor start time, use static wait time
             WaitTime = WDF_REL_TIMEOUT_IN_MS(pDevice->m_IntervalMs);
         }
-        else
-        {
+        else {
             ULONG CurrentTimeMs = 0;
 
             // dynamically calculate wait time to avoid jitter
-            Status = GetPerformanceTime (&CurrentTimeMs);
-            if (!NT_SUCCESS(Status))
-            {
+            Status = GetPerformanceTime(&CurrentTimeMs);
+            if (!NT_SUCCESS(Status)) {
                 TraceError("COMBO %!FUNC! GetPerformanceTime %!STATUS!", Status);
                 WaitTime = WDF_REL_TIMEOUT_IN_MS(pDevice->m_IntervalMs);
             }
-            else
-            {
+            else {
                 pDevice->m_SampleCount++;
-                if (CurrentTimeMs > (pDevice->m_StartTime + (pDevice->m_IntervalMs * (pDevice->m_SampleCount + 1))))
-                {
+                if (CurrentTimeMs > (pDevice->m_StartTime + (pDevice->m_IntervalMs * (pDevice->m_SampleCount + 1)))) {
                     // If we skipped two or more beats, reschedule the timer with a zero due time to catch up on missing samples
                     WaitTime = 0;
                 }
-                else
-                {
+                else {
                     // Else, just compute the remaining time
                     WaitTime = (pDevice->m_StartTime +
-                        (pDevice->m_IntervalMs * (pDevice->m_SampleCount + 1))) - CurrentTimeMs;
+                                (pDevice->m_IntervalMs * (pDevice->m_SampleCount + 1))) -
+                               CurrentTimeMs;
                 }
 
                 WaitTime = WDF_REL_TIMEOUT_IN_MS(WaitTime);
@@ -104,8 +94,6 @@ Exit:
     SENSOR_FunctionExit(Status);
 }
 
-
-
 //------------------------------------------------------------------------------
 // Function: OnStart
 //
@@ -119,23 +107,20 @@ Exit:
 //------------------------------------------------------------------------------
 NTSTATUS
 OnStart(
-    _In_ SENSOROBJECT SensorInstance
-    )
+    _In_ SENSOROBJECT SensorInstance)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (pDevice == nullptr)
-    {
+    if (pDevice == nullptr) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Sensor(%p) parameter is invalid. Failed %!STATUS!", static_cast<PVOID>(&SensorInstance), Status);
         goto Exit;
     }
 
-    if (pDevice->m_PoweredOn == FALSE)
-    {
+    if (pDevice->m_PoweredOn == FALSE) {
         Status = STATUS_DEVICE_NOT_READY;
         TraceError("COMBO %!FUNC! Sensor is not powered on! %!STATUS!", Status);
         goto Exit;
@@ -163,8 +148,6 @@ Exit:
     return Status;
 }
 
-
-
 //------------------------------------------------------------------------------
 // Function: OnStop
 //
@@ -178,16 +161,14 @@ Exit:
 //------------------------------------------------------------------------------
 NTSTATUS
 OnStop(
-    _In_ SENSOROBJECT SensorInstance
-    )
+    _In_ SENSOROBJECT SensorInstance)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (pDevice == nullptr)
-    {
+    if (pDevice == nullptr) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Sensor(%p) parameter is invalid. Failed %!STATUS!", static_cast<PVOID>(&SensorInstance), Status);
         goto Exit;
@@ -205,8 +186,7 @@ OnStop(
     //
     // Restoring system time resolution
     //
-    if (TIMERR_NOERROR != timeEndPeriod(SYSTEM_TICK_COUNT_1MS))
-    {
+    if (TIMERR_NOERROR != timeEndPeriod(SYSTEM_TICK_COUNT_1MS)) {
         // not a failure, just log message
         Status = STATUS_UNSUCCESSFUL;
         TraceWarning("COMBO %!FUNC! timeEndPeriod failed to restore timer resolution! %!STATUS!", Status);
@@ -217,8 +197,6 @@ Exit:
 
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnGetSupportedDataFields
@@ -240,39 +218,33 @@ NTSTATUS
 OnGetSupportedDataFields(
     _In_ SENSOROBJECT SensorInstance,
     _Inout_opt_ PSENSOR_PROPERTY_LIST pFields,
-    _Out_ PULONG pSize
-    )
+    _Out_ PULONG pSize)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice || nullptr == pSize)
-    {
+    if (nullptr == pDevice || nullptr == pSize) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameters! %!STATUS!", Status);
         goto Exit;
     }
 
-    if (nullptr == pFields)
-    {
+    if (nullptr == pFields) {
         // Just return size
         *pSize = pDevice->m_pSupportedDataFields->AllocatedSizeInBytes;
     }
-    else
-    {
-        if (pFields->AllocatedSizeInBytes < pDevice->m_pSupportedDataFields->AllocatedSizeInBytes)
-        {
+    else {
+        if (pFields->AllocatedSizeInBytes < pDevice->m_pSupportedDataFields->AllocatedSizeInBytes) {
             Status = STATUS_INSUFFICIENT_RESOURCES;
             TraceError("COMBO %!FUNC! Buffer is too small. Failed %!STATUS!", Status);
             goto Exit;
         }
 
         // Fill out data
-        Status = PropertiesListCopy (pFields, pDevice->m_pSupportedDataFields);
-        if (!NT_SUCCESS(Status))
-        {
+        Status = PropertiesListCopy(pFields, pDevice->m_pSupportedDataFields);
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! PropertiesListCopy failed %!STATUS!", Status);
             goto Exit;
         }
@@ -281,15 +253,12 @@ OnGetSupportedDataFields(
     }
 
 Exit:
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         *pSize = 0;
     }
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnGetProperties
@@ -311,31 +280,26 @@ NTSTATUS
 OnGetProperties(
     _In_ SENSOROBJECT SensorInstance,
     _Inout_opt_ PSENSOR_COLLECTION_LIST pProperties,
-    _Out_ PULONG pSize
-    )
+    _Out_ PULONG pSize)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice || nullptr == pSize)
-    {
+    if (nullptr == pDevice || nullptr == pSize) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameters! %!STATUS!", Status);
         goto Exit;
     }
 
-    if (nullptr == pProperties)
-    {
+    if (nullptr == pProperties) {
         // Just return size
         *pSize = CollectionsListGetMarshalledSize(pDevice->m_pProperties);
     }
-    else
-    {
+    else {
         if (pProperties->AllocatedSizeInBytes <
-            CollectionsListGetMarshalledSize(pDevice->m_pProperties))
-        {
+            CollectionsListGetMarshalledSize(pDevice->m_pProperties)) {
             Status = STATUS_INSUFFICIENT_RESOURCES;
             TraceError("COMBO %!FUNC! Buffer is too small. Failed %!STATUS!", Status);
             goto Exit;
@@ -343,8 +307,7 @@ OnGetProperties(
 
         // Fill out all data
         Status = CollectionsListCopyAndMarshall(pProperties, pDevice->m_pProperties);
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! CollectionsListCopyAndMarshall failed %!STATUS!", Status);
             goto Exit;
         }
@@ -353,14 +316,12 @@ OnGetProperties(
     }
 
 Exit:
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         *pSize = 0;
     }
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
 
 //------------------------------------------------------------------------------
 // Function: OnGetDataFieldProperties
@@ -384,42 +345,35 @@ OnGetDataFieldProperties(
     _In_ SENSOROBJECT SensorInstance,
     _In_ const PROPERTYKEY *DataField,
     _Inout_opt_ PSENSOR_COLLECTION_LIST pProperties,
-    _Out_ PULONG pSize
-)
+    _Out_ PULONG pSize)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice || nullptr == pSize || nullptr == DataField)
-    {
+    if (nullptr == pDevice || nullptr == pSize || nullptr == DataField) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameters! %!STATUS!", Status);
         goto Exit;
     }
 
-    if (IsKeyPresentInPropertyList(pDevice->m_pSupportedDataFields, DataField) != FALSE)
-    {
-        if (nullptr == pProperties)
-        {
+    if (IsKeyPresentInPropertyList(pDevice->m_pSupportedDataFields, DataField) != FALSE) {
+        if (nullptr == pProperties) {
             // Just return size
             *pSize = CollectionsListGetMarshalledSize(pDevice->m_pDataFieldProperties);
         }
-        else
-        {
+        else {
             if (pProperties->AllocatedSizeInBytes <
-                CollectionsListGetMarshalledSize(pDevice->m_pDataFieldProperties))
-            {
+                CollectionsListGetMarshalledSize(pDevice->m_pDataFieldProperties)) {
                 Status = STATUS_INSUFFICIENT_RESOURCES;
                 TraceError("COMBO %!FUNC! Buffer is too small. Failed %!STATUS!", Status);
                 goto Exit;
             }
 
             // Fill out all data
-            Status = CollectionsListCopyAndMarshall (pProperties, pDevice->m_pDataFieldProperties);
-            if (!NT_SUCCESS(Status))
-            {
+            Status = CollectionsListCopyAndMarshall(pProperties, pDevice->m_pDataFieldProperties);
+            if (!NT_SUCCESS(Status)) {
                 TraceError("COMBO %!FUNC! CollectionsListCopyAndMarshall failed %!STATUS!", Status);
                 goto Exit;
             }
@@ -427,23 +381,19 @@ OnGetDataFieldProperties(
             *pSize = CollectionsListGetMarshalledSize(pDevice->m_pDataFieldProperties);
         }
     }
-    else
-    {
+    else {
         Status = STATUS_NOT_SUPPORTED;
         TraceError("COMBO %!FUNC! Sensor does NOT have properties for this data field. Failed %!STATUS!", Status);
         goto Exit;
     }
 
 Exit:
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         *pSize = 0;
     }
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnGetDataInterval
@@ -460,23 +410,20 @@ Exit:
 NTSTATUS
 OnGetDataInterval(
     _In_ SENSOROBJECT SensorInstance,
-    _Out_ PULONG DataRateMs
-    )
+    _Out_ PULONG DataRateMs)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (pDevice == nullptr)
-    {
+    if (pDevice == nullptr) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameter!");
         goto Exit;
     }
 
-    if (DataRateMs == nullptr)
-    {
+    if (DataRateMs == nullptr) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! DataRateMs(%p) parameter is invalid. Failed %!STATUS!", static_cast<PVOID>(DataRateMs), Status);
         goto Exit;
@@ -488,8 +435,6 @@ Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnSetDataInterval
@@ -506,16 +451,14 @@ Exit:
 NTSTATUS
 OnSetDataInterval(
     _In_ SENSOROBJECT SensorInstance,
-    _In_ ULONG DataRateMs
-    )
+    _In_ ULONG DataRateMs)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (pDevice == nullptr || DataRateMs == 0)
-    {
+    if (pDevice == nullptr || DataRateMs == 0) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameter!");
         goto Exit;
@@ -524,8 +467,7 @@ OnSetDataInterval(
     pDevice->m_IntervalMs = DataRateMs;
 
     // reschedule sample to return as soon as possible if it's started
-    if (FALSE != pDevice->m_Started)
-    {
+    if (FALSE != pDevice->m_Started) {
         pDevice->m_Started = FALSE;
         WdfTimerStop(pDevice->m_Timer, TRUE);
 
@@ -538,8 +480,6 @@ Exit:
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnGetDataThresholds
@@ -561,40 +501,34 @@ NTSTATUS
 OnGetDataThresholds(
     _In_ SENSOROBJECT SensorInstance,
     _Inout_opt_ PSENSOR_COLLECTION_LIST pThresholds,
-    _Out_ PULONG pSize
-    )
+    _Out_ PULONG pSize)
 {
     PComboDevice pDevice = GetContextFromSensorInstance(SensorInstance);
     NTSTATUS Status = STATUS_SUCCESS;
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice || nullptr == pSize)
-    {
+    if (nullptr == pDevice || nullptr == pSize) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameters!");
         goto Exit;
     }
 
-    if (nullptr == pThresholds)
-    {
+    if (nullptr == pThresholds) {
         // Just return size
         *pSize = CollectionsListGetMarshalledSize(pDevice->m_pThresholds);
     }
-    else
-    {
+    else {
         if (pThresholds->AllocatedSizeInBytes <
-            CollectionsListGetMarshalledSize(pDevice->m_pThresholds))
-        {
+            CollectionsListGetMarshalledSize(pDevice->m_pThresholds)) {
             Status = STATUS_INSUFFICIENT_RESOURCES;
             TraceError("COMBO %!FUNC! Buffer is too small!");
             goto Exit;
         }
 
         // Fill out all data
-        Status = CollectionsListCopyAndMarshall (pThresholds, pDevice->m_pThresholds);
-        if (!NT_SUCCESS(Status))
-        {
+        Status = CollectionsListCopyAndMarshall(pThresholds, pDevice->m_pThresholds);
+        if (!NT_SUCCESS(Status)) {
             TraceError("COMBO %!FUNC! CollectionsListCopyAndMarshall failed %!STATUS!", Status);
             goto Exit;
         }
@@ -603,15 +537,12 @@ OnGetDataThresholds(
     }
 
 Exit:
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         *pSize = 0;
     }
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnSetDataThresholds
@@ -628,8 +559,7 @@ Exit:
 NTSTATUS
 OnSetDataThresholds(
     _In_ SENSOROBJECT SensorInstance,
-    _In_ PSENSOR_COLLECTION_LIST pThresholds
-    )
+    _In_ PSENSOR_COLLECTION_LIST pThresholds)
 {
     ULONG Element;
     BOOLEAN IsLocked = FALSE;
@@ -638,8 +568,7 @@ OnSetDataThresholds(
 
     SENSOR_FunctionEnter();
 
-    if (pDevice == nullptr)
-    {
+    if (pDevice == nullptr) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! Invalid parameter!");
         goto Exit;
@@ -648,14 +577,12 @@ OnSetDataThresholds(
     Lock(pDevice->m_Lock);
     IsLocked = TRUE;
 
-    for (Element = 0; Element < pThresholds->Count; Element++)
-    {
+    for (Element = 0; Element < pThresholds->Count; Element++) {
         Status = PropKeyFindKeySetPropVariant(pDevice->m_pThresholds,
                                               &(pThresholds->List[Element].Key),
                                               TRUE,
                                               &(pThresholds->List[Element].Value));
-        if (!NT_SUCCESS(Status))
-        {
+        if (!NT_SUCCESS(Status)) {
             Status = STATUS_INVALID_PARAMETER;
             TraceError("COMBO %!FUNC! Sensor does NOT have threshold for this data field. Failed %!STATUS!", Status);
             goto Exit;
@@ -664,23 +591,19 @@ OnSetDataThresholds(
 
     // Update cached threshholds
     Status = pDevice->UpdateCachedThreshold();
-    if (!NT_SUCCESS(Status))
-    {
+    if (!NT_SUCCESS(Status)) {
         TraceError("COMBO %!FUNC! UpdateCachedThreshold failed! %!STATUS!", Status);
         goto Exit;
     }
 
 Exit:
-    if (IsLocked)
-    {
+    if (IsLocked) {
         Unlock(pDevice->m_Lock);
         IsLocked = FALSE;
     }
     SENSOR_FunctionExit(Status);
     return Status;
 }
-
-
 
 //------------------------------------------------------------------------------
 // Function: OnIoControl
@@ -703,7 +626,7 @@ NTSTATUS OnIoControl(
     _In_ size_t /*OutputBufferLength*/,   // number of bytes to retrieve from output buffer
     _In_ size_t /*InputBufferLength*/,    // number of bytes to retrieve from input buffer
     _In_ ULONG /*IoControlCode*/          // IOCTL control code
-    )
+)
 {
     NTSTATUS Status = STATUS_NOT_SUPPORTED;
 
@@ -713,8 +636,6 @@ NTSTATUS OnIoControl(
     return Status;
 }
 
-
-
 // Called by Sensor CLX to begin keeping history
 NTSTATUS OnStartHistory(_In_ SENSOROBJECT SensorInstance)
 {
@@ -723,13 +644,11 @@ NTSTATUS OnStartHistory(_In_ SENSOROBJECT SensorInstance)
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else
-    {
+    else {
         Status = pDevice->StartHistory();
     }
 
@@ -745,13 +664,11 @@ NTSTATUS OnStopHistory(_In_ SENSOROBJECT SensorInstance)
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else
-    {
+    else {
         Status = pDevice->StopHistory();
     }
 
@@ -767,13 +684,11 @@ NTSTATUS OnEnableWake(_In_ SENSOROBJECT SensorInstance)
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else
-    {
+    else {
         pDevice->m_WakeEnabled = TRUE;
         Status = pDevice->EnableWake();
     }
@@ -790,13 +705,11 @@ NTSTATUS OnDisableWake(_In_ SENSOROBJECT SensorInstance)
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else
-    {
+    else {
         pDevice->m_WakeEnabled = FALSE;
         Status = pDevice->DisableWake();
     }
@@ -813,13 +726,11 @@ NTSTATUS OnClearHistory(_In_ SENSOROBJECT SensorInstance)
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else
-    {
+    else {
         Status = pDevice->ClearHistory();
     }
 
@@ -838,18 +749,15 @@ NTSTATUS OnStartHistoryRetrieval(
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else if (sizeof(SENSOR_COLLECTION_LIST) > HistorySizeInBytes)
-    {
+    else if (sizeof(SENSOR_COLLECTION_LIST) > HistorySizeInBytes) {
         Status = STATUS_BUFFER_TOO_SMALL;
         TraceError("COMBO %!FUNC! HistorySizeInBytes is too small %!STATUS!", Status);
     }
-    else
-    {
+    else {
         Status = pDevice->StartHistoryRetrieval(pHistoryBuffer, HistorySizeInBytes);
     }
 
@@ -865,13 +773,11 @@ NTSTATUS OnCancelHistoryRetrieval(_In_ SENSOROBJECT SensorInstance, _Out_ PULONG
 
     SENSOR_FunctionEnter();
 
-    if (nullptr == pDevice)
-    {
+    if (nullptr == pDevice) {
         Status = STATUS_INVALID_PARAMETER;
         TraceError("COMBO %!FUNC! GetContextFromSensorInstance failed %!STATUS!", Status);
     }
-    else
-    {
+    else {
         Status = pDevice->CancelHistoryRetrieval(pBytesWritten);
     }
 
