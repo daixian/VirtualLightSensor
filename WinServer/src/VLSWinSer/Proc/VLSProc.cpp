@@ -1,4 +1,6 @@
 #include "VLSProc.h"
+#include "CVSystem/DShow/UVCCamera.h"
+#include "../data/Profile.h"
 
 namespace dxlib {
 
@@ -32,9 +34,18 @@ void VLSProc::onLightSleep(int& key)
 
 void VLSProc::onEnable()
 {
+    UVCCamera uvc;
+    uvc.connectDevice(Profile::GetInst()->cameraName);
+
+    //关闭摄像头的自动曝光
+    uvc.setAutoExposure(false);
+    uvc.setBacklightCompensation(false);
+
+    uvc.disconnectDevice();
 }
 
 void VLSProc::onDisable()
 {
 }
+
 } // namespace dxlib

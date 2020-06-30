@@ -114,7 +114,7 @@ class DebugRequestHandler : public HTTPRequestHandler
      */
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
-    /// <summary> 传递过来的当前实际事件. </summary>
+    // 传递过来的当前实际事件.
     HandlerType ev;
 
     /**

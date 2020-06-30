@@ -9,6 +9,8 @@ class VLSModule
     VLSModule();
     ~VLSModule();
 
+    void go();
+
   private:
 };
 
