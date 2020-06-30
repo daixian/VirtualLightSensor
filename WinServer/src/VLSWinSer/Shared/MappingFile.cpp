@@ -92,6 +92,23 @@ int MappingFile::init()
     return 0;
 }
 
+int MappingFile::init_c()
+{
+    _impl->open();
+
+    auto& fileMapping = _impl->sharedMemory;
+    if (fileMapping.pView != NULL) {
+        LSData = (LightSensorData*)fileMapping.pView;
+    }
+    else {
+        LSData = NULL;
+    }
+    if (LSData == nullptr) {
+        LogE("MappingFile.init_c():LSData=null 初始化失败!!");
+        return -1;
+    }
+}
+
 void MappingFile::reset()
 {
     if (LSData == nullptr) {
@@ -102,6 +119,7 @@ void MappingFile::reset()
     *LSData = {
         1,    // 驱动内部版本
         0,    // windows服务还没有运行
+        0,    // run count
         1.0f, // Lux
         1.0f, // Kelvins
         0.5f, // Chromaticity X

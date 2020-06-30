@@ -3,7 +3,7 @@
 namespace dxlib {
 
 /**
- * 共享内存数据定义.
+ * 虚拟传感器共享内存数据定义.
  *
  * @author daixian
  * @date 2020/6/24
@@ -15,6 +15,9 @@ struct LightSensorData
 
     // windows服务程序状态，当它不为0之后表示有windows服务器对接上了。
     int WinServerStatus;
+
+    // 运行的计数
+    unsigned int runCount;
 
     float Lux;
     float Kelvins;
@@ -49,6 +52,16 @@ class MappingFile
      * @returns 成功返回0,失败返回-1.
      */
     int init();
+
+    /**
+     * 客户端的初始化
+     *
+     * @author daixian
+     * @date 2020/6/30
+     *
+     * @returns An int.
+     */
+    int init_c();
 
     /**
      * 初始化一些结果的初始值.

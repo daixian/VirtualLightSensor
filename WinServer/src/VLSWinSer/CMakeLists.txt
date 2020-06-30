@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SUB_NAME "VLSWinSer.out")
 
-add_definitions(-D UNICODE)
+# add_definitions(-D UNICODE)
 if(WIN32)
     add_definitions(-D _WINDOWS)
     add_definitions(-D _USERDLL)

@@ -222,14 +222,14 @@
       <WppModuleName>VirtualLightSensorDriver</WppModuleName>
       <WppScanConfigurationData>sensorstrace.h</WppScanConfigurationData>
     </ClCompile>
-    <ClCompile Include="MappingFile.cpp" />
+    <ClCompile Include="Shared\MappingFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clients.h" />
     <ClInclude Include="Driver.h" />
-    <ClInclude Include="MappingFile.h" />
+    <ClInclude Include="Shared\MappingFile.h" />
     <ClInclude Include="SensorsTrace.h" />
-    <ClInclude Include="SharedMemory.hpp" />
+    <ClInclude Include="Shared\SharedMemory.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -13,7 +13,7 @@
 #include "AlsClient.tmh"
 
 #include <stdio.h>
-#include "MappingFile.h"
+#include "./Shared/MappingFile.h"
 
 #define SENSORV2_POOL_TAG_AMBIENT_LIGHT '2LmA'
 
@@ -493,8 +493,10 @@ AlsDevice::GetData()
 
     SENSOR_FunctionEnter();
 
-    m_CachedData.Lux += 1.0f;
-    dxlib::MappingFile::GetInst()->writeLux(m_CachedData.Lux);
+    dxlib::MappingFile::GetInst()->runCountIncrease();
+
+    //使用传递的值给Lux赋值
+    m_CachedData.Lux = dxlib::MappingFile::GetInst()->readLux();
 
     // new sample?
     if (m_FirstSample != FALSE) {

@@ -31,7 +31,7 @@
     <ClCompile Include="driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MappingFile.cpp">
+    <ClCompile Include="Shared\MappingFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,10 +45,10 @@
     <ClInclude Include="SensorsTrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SharedMemory.hpp">
+    <ClInclude Include="Shared\SharedMemory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MappingFile.h">
+    <ClInclude Include="Shared\MappingFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

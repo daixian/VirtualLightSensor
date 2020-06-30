@@ -13,15 +13,14 @@ os.system("chcp 65001")
 class VirtualLightSensorWinSerConan(ConanFile):
     name = "VirtualLightSensorWinSer"
     version = "1.0.0"
-    license = "GLWTPL"
+    license = "GPL"
     author = "daixian<amano_tooko@qq.com>"
     url = "https://github.com/daixian/VirtualLightSensor"
     description = "虚拟光线传感器windows服务"
     topics = ("opencv", "daixian")
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "build_test": [True, False]}
-    default_options = {"shared": False,
-                       "build_test": True,
+    options = {"build_test": [True, False]}
+    default_options = {"build_test": True,
                        "dlog:shared": True,
                        "opencv:shared": True,
                        "boost:without_test": True}
@@ -32,7 +31,7 @@ class VirtualLightSensorWinSerConan(ConanFile):
         pass
 
     def build_requirements(self):
-        self.build_requires("cvsystem/[>3.0.0]@daixian/stable")
+        self.build_requires("cvsystem/[>=3.3.11]@daixian/stable")
         self.build_requires("gtest/1.8.1@bincrafters/stable")
 
     def _configure_cmake(self):
@@ -40,7 +39,6 @@ class VirtualLightSensorWinSerConan(ConanFile):
         转换python的设置到CMake
         '''
         cmake = CMake(self)
-        cmake.definitions["VLS_WINSER_BUILD_SHARED"] = self.options.shared
         cmake.definitions["VLS_WINSER_BUILD_TESTS"] = self.options.build_test
         return cmake
 
