@@ -1,4 +1,4 @@
-#include "VLSProc.h"
+ï»¿#include "VLSProc.h"
 #include "CVSystem/DShow/UVCCamera.h"
 #include "../data/Profile.h"
 
@@ -37,7 +37,7 @@ void VLSProc::onEnable()
     UVCCamera uvc;
     uvc.connectDevice(Profile::GetInst()->cameraName);
 
-    //¹Ø±ÕÉãÏñÍ·µÄ×Ô¶¯ÆØ¹â
+    //å…³é—­æ‘„åƒå¤´çš„è‡ªåŠ¨æ›å…‰
     uvc.setAutoExposure(false);
     uvc.setBacklightCompensation(false);
 

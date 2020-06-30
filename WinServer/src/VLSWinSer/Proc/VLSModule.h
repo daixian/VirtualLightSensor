@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CVSystem/CVSystem.h"
 
 namespace dxlib {

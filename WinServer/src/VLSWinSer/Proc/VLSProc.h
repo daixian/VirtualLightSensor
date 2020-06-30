@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "CVSystem/CVSystem.h"
 
 namespace dxlib {
 
 /**
- * ĞéÄâ¹âÏß´«¸ĞÆ÷µÄProc.
+ * è™šæ‹Ÿå…‰çº¿ä¼ æ„Ÿå™¨çš„Proc.
  *
  * @author daixian
  * @date 2020/6/30
@@ -17,18 +17,18 @@ class VLSProc : public FrameProc
     ~VLSProc();
 
     /**
-     * ´¦Àíº¯Êı½Ó¿Ú,·µ»ØÖµ×÷ÎªÒ»¸ökeyÖµ,Èç¹ûÃ»ÓĞ°´ÏÂ°´¼ü,ÄÇÃ´ÕâÀï·µ»Ø-1(ºÍwaitkey()µÄÎŞ°´¼ü·µ»ØÖµÏàÍ¬).
+     * å¤„ç†å‡½æ•°æ¥å£,è¿”å›å€¼ä½œä¸ºä¸€ä¸ªkeyå€¼,å¦‚æœæ²¡æœ‰æŒ‰ä¸‹æŒ‰é”®,é‚£ä¹ˆè¿™é‡Œè¿”å›-1(å’Œwaitkey()çš„æ— æŒ‰é”®è¿”å›å€¼ç›¸åŒ).
      *
      * @author daixian
      * @date 2019/3/19
      *
-     * @param          camImage ²É¼¯µÄ´¦ÀíÍ¼Ïñ.
-     * @param [in,out] key      ÕâÀïwaitkey()µÃµ½µÄ°´¼ükeyÖµ.
+     * @param          camImage é‡‡é›†çš„å¤„ç†å›¾åƒ.
+     * @param [in,out] key      è¿™é‡Œwaitkey()å¾—åˆ°çš„æŒ‰é”®keyå€¼.
      */
     void process(pCameraImage camImage, int& key) override;
 
     /**
-     * Ç³Ë¯Ãß,´ËÊ±Ïà»úÃ»ÓĞ×¥Í¼,Ã»ÓĞ²ÉÍ¼.µ«ÊÇ»á¶¨Ê±300ms´«³öÕâ¸öÊÂ¼şÀ´¿ÉÒÔÖ´ĞĞÒ»Ğ©º¯Êı.
+     * æµ…ç¡çœ ,æ­¤æ—¶ç›¸æœºæ²¡æœ‰æŠ“å›¾,æ²¡æœ‰é‡‡å›¾.ä½†æ˜¯ä¼šå®šæ—¶300msä¼ å‡ºè¿™ä¸ªäº‹ä»¶æ¥å¯ä»¥æ‰§è¡Œä¸€äº›å‡½æ•°.
      *
      * @author daixian
      * @date 2019/4/14
@@ -38,7 +38,7 @@ class VLSProc : public FrameProc
     void onLightSleep(int& key) override;
 
     /**
-     * ±»Ê¹ÄÜµÄÊ±ºòµÄÏìÓ¦.
+     * è¢«ä½¿èƒ½çš„æ—¶å€™çš„å“åº”.
      *
      * @author daixian
      * @date 2018/10/18
@@ -46,7 +46,7 @@ class VLSProc : public FrameProc
     void onEnable() override;
 
     /**
-     * ²»Ê¹ÄÜµÄÊ±ºòµÄÏìÓ¦.
+     * ä¸ä½¿èƒ½çš„æ—¶å€™çš„å“åº”.
      *
      * @author daixian
      * @date 2018/9/28
@@ -54,12 +54,12 @@ class VLSProc : public FrameProc
     void onDisable() override;
 
     /**
-     * µ±Ç°procµÄ±êÊ¾Ãû.
+     * å½“å‰procçš„æ ‡ç¤ºå.
      *
      * @author daixian
      * @date 2019/3/19
      *
-     * @returns µ±Ç°procµÄ±êÊ¾Ãû.
+     * @returns å½“å‰procçš„æ ‡ç¤ºå.
      */
     const char* name() override
     {

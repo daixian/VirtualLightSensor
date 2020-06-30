@@ -1,4 +1,4 @@
-#include "DebugRequestHandler.h"
+﻿#include "DebugRequestHandler.h"
 #include <iostream>
 #include "dlog/dlog.h"
 #include "xuexuejson/Serialize.hpp"
@@ -52,10 +52,10 @@ void DebugRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRe
         }
     }
     catch (const Poco::Exception& pe) {
-        LogE("DebugRequestHandler.handleRequest():�쳣:%s,%s ", pe.what(), pe.message().c_str());
+        LogE("DebugRequestHandler.handleRequest():异常:%s,%s ", pe.what(), pe.message().c_str());
     }
     catch (const std::exception& e) {
-        LogE("DebugRequestHandler.handleRequest():�쳣:%s", e.what());
+        LogE("DebugRequestHandler.handleRequest():异常:%s", e.what());
     }
 }
 

@@ -1,4 +1,4 @@
-#include "VLSModule.h"
+ï»¿#include "VLSModule.h"
 #include "CVSystem/DShow/UVCCamera.h"
 #include "../data/Profile.h"
 
@@ -12,19 +12,19 @@ VLSModule::~VLSModule()
 {
 }
 
-void go()
+void VLSModule::go()
 {
     UVCCamera uvc;
     uvc.connectDevice(Profile::GetInst()->cameraName);
     auto capabls = uvc.getCapabilities();
 
-    //Ñ¡ÔñÒ»¸ö×îĞ¡µÄ·Ö±æÂÊ
+    //é€‰æ‹©ä¸€ä¸ªæœ€å°çš„åˆ†è¾¨ç‡
     for (size_t i = 0; i < capabls.size(); i++) {
     }
 
     cv::Size scSize = cv::Size(1280, 400);
 
-    LogI("VLSModule.init():³õÊ¼»¯ÉèÖÃ...");
+    LogI("VLSModule.init():åˆå§‹åŒ–è®¾ç½®...");
 
     CameraManger::GetInst()->clear();
     CameraManger::GetInst()->add(std::make_shared<Camera>(Profile::GetInst()->cameraName));

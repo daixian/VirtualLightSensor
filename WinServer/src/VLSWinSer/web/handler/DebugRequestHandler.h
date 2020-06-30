@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPRequestHandler.h"
@@ -29,7 +29,7 @@ using Poco::Net::ServerSocket;
 namespace dxlib {
 
 /**
- * ´¦ÀíhttpÏûÏ¢:µ÷ÊÔ.
+ * å¤„ç†httpæ¶ˆæ¯:è°ƒè¯•.
  *
  * @author daixian
  * @date 2020/6/11
@@ -39,22 +39,22 @@ class DebugRequestHandler : public HTTPRequestHandler
   public:
     enum class HandlerType
     {
-        // Ã»ÓĞÖ§³ÖµÄ´¦Àí.
+        // æ²¡æœ‰æ”¯æŒçš„å¤„ç†.
         none,
 
-        // ÉèÖÃµ±Ç°µÄ¹²ÏíÄÚ´æ½á¹û.
+        // è®¾ç½®å½“å‰çš„å…±äº«å†…å­˜ç»“æœ.
         MFResultSet,
     };
 
     /**
-     * ÅĞ¶ÏÊÇ·ñÓĞÖ§³ÖµÄPath´¦Àí.
+     * åˆ¤æ–­æ˜¯å¦æœ‰æ”¯æŒçš„Pathå¤„ç†.
      *
      * @author daixian
      * @date 2020/3/18
      *
-     * @param  path ½âÂëÖ®ºóµÄpath.
+     * @param  path è§£ç ä¹‹åçš„path.
      *
-     * @returns ½âÎö³öÀ´µÄ´¦ÀíÀàĞÍ.
+     * @returns è§£æå‡ºæ¥çš„å¤„ç†ç±»å‹.
      */
     static HandlerType ParsePath(const std::string& path)
     {
@@ -65,15 +65,15 @@ class DebugRequestHandler : public HTTPRequestHandler
     }
 
     /**
-     * ¹¤³§·½·¨,Èç¹ûÄÜ¹»°üº¬Ö§³ÖµÄpath¾Í³É¹¦´´½¨¶ÔÏó,·ñÔò·µ»Ønull.
+     * å·¥å‚æ–¹æ³•,å¦‚æœèƒ½å¤ŸåŒ…å«æ”¯æŒçš„pathå°±æˆåŠŸåˆ›å»ºå¯¹è±¡,å¦åˆ™è¿”å›null.
      *
      * @author daixian
      * @date 2020/3/18
      *
-     * @param  uri  ÍêÕûuri.
-     * @param  path ½âÂëÖ®ºóµÄpath.
+     * @param  uri  å®Œæ•´uri.
+     * @param  path è§£ç ä¹‹åçš„path.
      *
-     * @returns ·µ»Ønull±íÊ¾²»Ö§³ÖµÄpath.
+     * @returns è¿”å›nullè¡¨ç¤ºä¸æ”¯æŒçš„path.
      */
     static HTTPRequestHandler* creat(const URI& uri, const std::string& path)
     {
@@ -85,18 +85,18 @@ class DebugRequestHandler : public HTTPRequestHandler
     }
 
     /**
-     * ¹¹Ôì.
+     * æ„é€ .
      *
      * @author daixian
      * @date 2020/3/18
      *
-     * @param  uri ÇëÇóµÄrui.
-     * @param  ev  Handler´¦ÀíÀàĞÍ.
+     * @param  uri è¯·æ±‚çš„rui.
+     * @param  ev  Handlerå¤„ç†ç±»å‹.
      */
     DebugRequestHandler(const Poco::URI& uri, const DebugRequestHandler::HandlerType& ev);
 
     /**
-     * Îö¹¹.
+     * ææ„.
      *
      * @author daixian
      * @date 2020/3/18
@@ -104,21 +104,21 @@ class DebugRequestHandler : public HTTPRequestHandler
     virtual ~DebugRequestHandler();
 
     /**
-     * override´¦Àí.
+     * overrideå¤„ç†.
      *
      * @author daixian
      * @date 2020/4/30
      *
-     * @param [in,out] request  httpÇëÇó.
-     * @param [in,out] response httpÏìÓ¦.
+     * @param [in,out] request  httpè¯·æ±‚.
+     * @param [in,out] response httpå“åº”.
      */
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
-    // ´«µİ¹ıÀ´µÄµ±Ç°Êµ¼ÊÊÂ¼ş.
+    // ä¼ é€’è¿‡æ¥çš„å½“å‰å®é™…äº‹ä»¶.
     HandlerType ev;
 
     /**
-     * httpµÄbodyµÄDTO,ÉèÖÃ¹²ÏíÄÚ´æµÄ½á¹û.
+     * httpçš„bodyçš„DTO,è®¾ç½®å…±äº«å†…å­˜çš„ç»“æœ.
      *
      * @author daixian
      * @date 2020/6/11
@@ -136,12 +136,12 @@ class DebugRequestHandler : public HTTPRequestHandler
     };
 
   private:
-    // µ±Ç°µÄuri.
+    // å½“å‰çš„uri.
     Poco::URI uri;
 
     void handleRequestMFResultSet(HTTPServerRequest& request, HTTPServerResponse& response);
 
-    // Òş²Ø³ÉÔ±
+    // éšè—æˆå‘˜
     class Impl;
     Impl* _impl;
 };
