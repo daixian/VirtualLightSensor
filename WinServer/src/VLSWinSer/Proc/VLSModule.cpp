@@ -53,10 +53,13 @@ void VLSModule::go()
         LogI("VLSModule.go():初始化设置...");
 
         CameraManger::GetInst()->clear();
-        auto cam = CameraManger::GetInst()->add(std::make_shared<Camera>(profile->cameraName));
-        cam->size = camSize;
+        auto cam = CameraManger::GetInst()->add(
+            std::make_shared<Camera>(profile->cameraName,
+                                     camSize,
+                                     uvc.getBrightness().Default));
+
         //cam->setProp(CV_CAP_PROP_AUTO_EXPOSURE, 0);
-        cam->setProp(cv::CAP_PROP_EXPOSURE, -11);
+        cam->setProp(cv::CAP_PROP_EXPOSURE, uvc.getExposure().Default);
         cam->setFourcc("MJPG"); //使用MJPG因为它的帧率更高曝光时间更确定
 
         MultiCamera::GetInst()->clearProc();
@@ -67,7 +70,7 @@ void VLSModule::go()
 
         uvc.setAutoFocus(false);
         uvc.setAutoExposure(false);
-        uvc.setBacklightCompensation(false);
+        uvc.setLowLightCompensation(false);
 
         uvc.disconnectDevice();
 

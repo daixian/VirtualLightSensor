@@ -1,6 +1,7 @@
 ﻿#include "VLSProc.h"
 #include "CVSystem/DShow/UVCCamera.h"
 #include "../data/Profile.h"
+#include "../Shared/MappingFile.h"
 
 namespace dxlib {
 
@@ -30,7 +31,19 @@ void VLSProc::process(pCameraImage camImage, int& key)
     CV_Assert(camImage->vImage.size() == 1);
 
     if (camImage->vImage[0].isSuccess) {
-        cv::Mat image = camImage->vImage[0].image;
+        cv::Mat& image = camImage->vImage[0].image;
+
+        cv::Mat gray;
+        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY); //COLOR_BGR2HLS
+        cv::Scalar mean = cv::mean(gray);
+        float value = mean[0];
+
+        if (value < 25) {
+            MappingFile::GetInst()->writeLux(value);
+        }
+        else {
+            MappingFile::GetInst()->writeLux(value * 50);
+        }
     }
 }
 
@@ -45,8 +58,10 @@ void VLSProc::onEnable()
 
     //关闭摄像头的自动曝光
     uvc.setAutoExposure(false);
-    uvc.setBacklightCompensation(false);
+    uvc.setLowLightCompensation(false);
 
+    //调试用,所有的当前属性
+    auto allProp = uvc.getAllProp();
     uvc.disconnectDevice();
 }
 
