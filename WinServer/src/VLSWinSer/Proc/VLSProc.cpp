@@ -26,6 +26,12 @@ VLSProc::~VLSProc()
 
 void VLSProc::process(pCameraImage camImage, int& key)
 {
+    //应该只有一个相机
+    CV_Assert(camImage->vImage.size() == 1);
+
+    if (camImage->vImage[0].isSuccess) {
+        cv::Mat image = camImage->vImage[0].image;
+    }
 }
 
 void VLSProc::onLightSleep(int& key)

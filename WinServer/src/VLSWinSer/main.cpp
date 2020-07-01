@@ -22,7 +22,8 @@ int main(int argc, char** argv)
         }
         LogI("当前DriverVer = %d", LSData->DriverVer);
     }
-    //VLSModule vls;
+    VLSModule vls;
+    vls.go();
 
     dxlib::AppHttpServer app;
     return app.run(argc, argv);

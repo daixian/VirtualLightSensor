@@ -30,7 +30,7 @@ class Profile : XUEXUE_JSON_OBJECT
     void load(std::string path);
 
     // 相机的名字
-    std::string cameraName;
+    std::string cameraName = "C920";
 
     XUEXUE_JSON_OBJECT_M1(cameraName)
 
