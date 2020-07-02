@@ -42,7 +42,7 @@ void VLSProc::process(pCameraImage camImage, int& key)
             MappingFile::GetInst()->writeLux(value);
         }
         else {
-            MappingFile::GetInst()->writeLux(value * 50);
+            MappingFile::GetInst()->writeLux(value * 3);
         }
     }
 }

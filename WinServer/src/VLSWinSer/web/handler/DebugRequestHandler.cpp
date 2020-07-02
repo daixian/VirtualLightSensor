@@ -46,7 +46,9 @@ void DebugRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRe
         case HandlerType::MFResultSet:
             handleRequestMFResultSet(request, response);
             break;
-
+        case HandlerType::AppStatus:
+            handleRequestAppStatus(request, response);
+            break;
         default:
             break;
         }
@@ -62,7 +64,7 @@ void DebugRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRe
 void DebugRequestHandler::handleRequestMFResultSet(HTTPServerRequest& request, HTTPServerResponse& response)
 {
     auto dto = xuexue::json::JsonMapper::toObject<DtoMFResultSet>(request.stream());
-    MappingFile::GetInst()->init();
+    MappingFile::GetInst()->init_c();
     LightSensorData* LSData = MappingFile::GetInst()->LSData;
     if (LSData != nullptr) {
         LSData->Lux = dto.Lux;
@@ -73,4 +75,17 @@ void DebugRequestHandler::handleRequestMFResultSet(HTTPServerRequest& request, H
     response.redirect("/event_done.html");
 }
 
+void DebugRequestHandler::handleRequestAppStatus(HTTPServerRequest& request, HTTPServerResponse& response)
+{
+    LightSensorData* LSData = MappingFile::GetInst()->LSData;
+    DtoAppStatus rep;
+    rep.Lux = LSData->Lux;
+    rep.runCount = LSData->runCount;
+    rep.fps = MultiCamera::GetInst()->fps();
+
+    response.setStatus(HTTPResponse::HTTP_OK);
+    response.setContentType("application/json");
+    std::ostream& out = response.send();
+    out << xuexue::json::JsonMapper::toJson(rep);
+}
 } // namespace dxlib

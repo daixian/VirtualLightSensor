@@ -44,6 +44,9 @@ class DebugRequestHandler : public HTTPRequestHandler
 
         // 设置当前的共享内存结果.
         MFResultSet,
+
+        // 当前app的状态
+        AppStatus,
     };
 
     /**
@@ -60,6 +63,9 @@ class DebugRequestHandler : public HTTPRequestHandler
     {
         if (path == "/debug/mf/result/set") {
             return HandlerType::MFResultSet;
+        }
+        if (path == "/app/status") {
+            return HandlerType::AppStatus;
         }
         return HandlerType::none;
     }
@@ -135,11 +141,29 @@ class DebugRequestHandler : public HTTPRequestHandler
       private:
     };
 
+    /**
+     * 回复给客户端的消息.
+     *
+     * @author daixian
+     * @date 2020/7/2
+     */
+    class DtoAppStatus : XUEXUE_JSON_OBJECT
+    {
+      public:
+        float Lux = 0;
+        float fps = 0;
+        unsigned int runCount = 0;
+        XUEXUE_JSON_OBJECT_M3(Lux, fps, runCount)
+
+      private:
+    };
+
   private:
     // 当前的uri.
     Poco::URI uri;
 
     void handleRequestMFResultSet(HTTPServerRequest& request, HTTPServerResponse& response);
+    void handleRequestAppStatus(HTTPServerRequest& request, HTTPServerResponse& response);
 
     // 隐藏成员
     class Impl;
