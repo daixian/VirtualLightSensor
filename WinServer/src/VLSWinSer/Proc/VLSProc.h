@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CVSystem/CVSystem.h"
+#include <mutex>
 
 namespace dxlib {
 
@@ -65,6 +66,28 @@ class VLSProc : public FrameProc
     {
         return "VLSProc";
     }
+
+    /**
+     * 这个类的状态信息数据,它需要线程安全.
+     *
+     * @author daixian
+     * @date 2020/7/2
+     */
+    class Status
+    {
+      public:
+        //当前帧结果
+        float value;
+
+        //当前帧图像
+        cv::Mat image;
+
+      private:
+        std::mutex lock;
+    };
+
+    // 是否是手动控制设置结果
+    bool isManual = false;
 
   private:
     class Impl;

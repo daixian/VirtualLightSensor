@@ -10,6 +10,7 @@
 #include "xuexue/math/math.h"
 
 #include "../../Shared/MappingFile.h"
+#include "../../Proc/VLSProc.h"
 
 using namespace xuexue;
 using namespace xuexue::json;
@@ -49,6 +50,9 @@ void DebugRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRe
         case HandlerType::AppStatus:
             handleRequestAppStatus(request, response);
             break;
+        case HandlerType::ConfigManual:
+            handleRequestConfigManual(request, response);
+            break;
         default:
             break;
         }
@@ -63,7 +67,7 @@ void DebugRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerRe
 
 void DebugRequestHandler::handleRequestMFResultSet(HTTPServerRequest& request, HTTPServerResponse& response)
 {
-    auto dto = xuexue::json::JsonMapper::toObject<DtoMFResultSet>(request.stream());
+    auto dto = JsonMapper::toObject<DtoMFResultSet>(request.stream());
     MappingFile::GetInst()->init_c();
     LightSensorData* LSData = MappingFile::GetInst()->LSData;
     if (LSData != nullptr) {
@@ -87,5 +91,18 @@ void DebugRequestHandler::handleRequestAppStatus(HTTPServerRequest& request, HTT
     response.setContentType("application/json");
     std::ostream& out = response.send();
     out << xuexue::json::JsonMapper::toJson(rep);
+}
+
+void DebugRequestHandler::handleRequestConfigManual(HTTPServerRequest& request, HTTPServerResponse& response)
+{
+    auto dto = JsonMapper::toObject<DtoConfigManual>(request.stream());
+
+    auto* ptr = MultiCamera::GetInst()->getProc(0);
+    if (ptr != nullptr) {
+        poco_assert(std::string(ptr->name()) == "VLSProc");
+        VLSProc* proc = (VLSProc*)ptr;
+        proc->isManual = dto.isManual;
+    }
+    response.redirect("/event_done.html");
 }
 } // namespace dxlib

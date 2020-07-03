@@ -42,6 +42,9 @@ class DebugRequestHandler : public HTTPRequestHandler
         // 没有支持的处理.
         none,
 
+        // 配置:是否是手动控制
+        ConfigManual,
+
         // 设置当前的共享内存结果.
         MFResultSet,
 
@@ -66,6 +69,9 @@ class DebugRequestHandler : public HTTPRequestHandler
         }
         if (path == "/app/status") {
             return HandlerType::AppStatus;
+        }
+        if (path == "/config/manual") {
+            return HandlerType::ConfigManual;
         }
         return HandlerType::none;
     }
@@ -158,12 +164,23 @@ class DebugRequestHandler : public HTTPRequestHandler
       private:
     };
 
+    class DtoConfigManual : XUEXUE_JSON_OBJECT
+    {
+      public:
+        bool isManual = false;
+
+        XUEXUE_JSON_OBJECT_M1(isManual)
+
+      private:
+    };
+
   private:
     // 当前的uri.
     Poco::URI uri;
 
     void handleRequestMFResultSet(HTTPServerRequest& request, HTTPServerResponse& response);
     void handleRequestAppStatus(HTTPServerRequest& request, HTTPServerResponse& response);
+    void handleRequestConfigManual(HTTPServerRequest& request, HTTPServerResponse& response);
 
     // 隐藏成员
     class Impl;

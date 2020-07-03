@@ -27,6 +27,11 @@ VLSProc::~VLSProc()
 
 void VLSProc::process(pCameraImage camImage, int& key)
 {
+    //如果是手动的
+    if (isManual) {
+        return;
+    }
+
     //应该只有一个相机
     CV_Assert(camImage->vImage.size() == 1);
 
